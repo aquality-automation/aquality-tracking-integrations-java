@@ -19,16 +19,17 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
     };
 
     private EventHandler<TestCaseStarted> testCaseStarted = event -> {
-        // 3. Create test if not exists - /api/public/test/create-or-update - by name
-        // 4. Add test to suite (the same as 3?)
-        // 5. Start test result - /api/public/test/result/start
+        // 3. Find test
+        // 4. Create test if not exists (with suite) else add test to suite
+        // 5. Add test to suite (the same as 3?)
+        // 6. Start test result - /api/public/test/result/start
     };
 
     private EventHandler<TestCaseFinished> testCaseFinished = event -> {
-        // 6. Finish test result - /api/public/test/result/finish
+        // 7. Finish test result - /api/public/test/result/finish
     };
 
     private EventHandler<TestRunFinished> testRunFinishedEventHandler = event -> {
-        // 7. Finish test run - /api/public/testrun/finish
+        // 8. Finish test run - /api/public/testrun/finish
     };
 }

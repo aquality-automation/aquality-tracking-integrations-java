@@ -21,7 +21,7 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints {
         }};
         URI uri = buildURI(START_TEST_RESULT_ENDPOINT, uriParams);
         String response = getHttpClient().sendGET(uri, getHeaders());
-        return JsonMapper.mapStringToObject(response, TestResult.class);
+        return JsonMapper.mapStringContent(response, TestResult.class);
     }
 
     public TestResult finishTestResult(int testResultId, int finalResultId, final String failReason) throws AqualityException {
@@ -33,6 +33,6 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints {
         }};
         URI uri = buildURI(FINISH_TEST_RESULT_ENDPOINT);
         String response = getHttpClient().sendPOST(uri, getHeaders(), JsonMapper.getJson(body));
-        return JsonMapper.mapStringToObject(response, TestResult.class);
+        return JsonMapper.mapStringContent(response, TestResult.class);
     }
 }

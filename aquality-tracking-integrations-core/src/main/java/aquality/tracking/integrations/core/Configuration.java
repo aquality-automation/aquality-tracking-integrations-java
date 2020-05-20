@@ -17,7 +17,7 @@ public class Configuration {
 
     public static Configuration getInstance() {
         if (instance == null) {
-            instance = JsonMapper.mapFileToObject("aqualityTracking.json", Configuration.class);
+            instance = JsonMapper.mapFileContent("aqualityTracking.json", Configuration.class);
         }
         return instance;
     }
