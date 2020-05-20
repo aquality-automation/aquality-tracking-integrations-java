@@ -1,19 +1,26 @@
 package aquality.tracking.integrations.core.endpoints;
 
+import aquality.tracking.integrations.core.AqualityException;
 import aquality.tracking.integrations.core.AqualityHttpClient;
+import aquality.tracking.integrations.core.Configuration;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicHeader;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.lang.String.format;
 
 public abstract class AqualityTrackingEndpoints {
 
-    private final String token = ""; // TODO: get from configuration
+    protected static final Configuration CONFIG = Configuration.getInstance();
 
     private final AqualityHttpClient httpClient;
 
@@ -25,16 +32,34 @@ public abstract class AqualityTrackingEndpoints {
         return httpClient;
     }
 
-    protected List<Header> getHeaders(final String projectId) {
+    protected List<Header> getHeaders() {
         List<Header> headers = new ArrayList<>();
         headers.add(new BasicHeader(HttpHeaders.ACCEPT, "application/json"));
-        headers.add(getBasicAuthHeader(projectId));
+        headers.add(getBasicAuthHeader());
         return headers;
     }
 
-    private Header getBasicAuthHeader(final String projectId) {
-        byte[] encodedAuth = Base64.encodeBase64(format("project:%s:%s", projectId, token).getBytes());
+    private Header getBasicAuthHeader() {
+        final String auth = format("project:%d:%s", CONFIG.getProjectId(), CONFIG.getToken());
+        byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
         String authHeader = "Basic ".concat(new String(encodedAuth));
         return new BasicHeader(HttpHeaders.AUTHORIZATION, authHeader);
+    }
+
+    protected URI buildURI(final String path) throws AqualityException {
+        return buildURI(path, new HashMap<>());
+    }
+
+    protected URI buildURI(final String path, final Map<String, String> params) throws AqualityException {
+        URI uri;
+        try {
+            URIBuilder uriBuilder = new URIBuilder(CONFIG.getHost());
+            uriBuilder.setPath(path);
+            params.forEach(uriBuilder::setParameter);
+            uri = uriBuilder.build();
+        } catch (URISyntaxException e) {
+            throw new AqualityException("Exception during build URI", e);
+        }
+        return uri;
     }
 }
