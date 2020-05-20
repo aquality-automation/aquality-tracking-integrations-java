@@ -19,6 +19,7 @@ public class SuiteEndpoints extends AqualityTrackingEndpoints {
         Suite suite = new Suite();
         suite.setProjectId(CONFIG.getProjectId());
         suite.setName(name);
+
         URI uri = buildURI(CREATE_OR_UPDATE_ENDPOINT);
         String response = getHttpClient().sendPOST(uri, getHeaders(), JsonMapper.getJson(suite));
         return JsonMapper.mapStringToObject(response, Suite.class);

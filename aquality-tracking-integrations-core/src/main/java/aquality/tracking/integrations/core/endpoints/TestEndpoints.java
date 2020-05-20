@@ -17,6 +17,7 @@ public class TestEndpoints extends AqualityTrackingEndpoints {
         test.setProjectId(CONFIG.getProjectId());
         test.setName(name);
         test.setSuites(suites);
+
         URI uri = buildURI(CREATE_OR_UPDATE_ENDPOINT);
         String response = getHttpClient().sendPOST(uri, getHeaders(), JsonMapper.getJson(test));
         return JsonMapper.mapStringToObject(response, Test.class);
