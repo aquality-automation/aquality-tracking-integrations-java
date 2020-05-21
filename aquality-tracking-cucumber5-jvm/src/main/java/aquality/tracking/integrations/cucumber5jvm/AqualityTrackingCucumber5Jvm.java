@@ -1,35 +1,148 @@
 package aquality.tracking.integrations.cucumber5jvm;
 
+import aquality.tracking.integrations.core.AqualityUncheckedException;
+import aquality.tracking.integrations.core.FinalResultId;
+import aquality.tracking.integrations.core.endpoints.SuiteEndpoints;
+import aquality.tracking.integrations.core.endpoints.TestEndpoints;
+import aquality.tracking.integrations.core.endpoints.TestResultEndpoints;
+import aquality.tracking.integrations.core.endpoints.TestRunEndpoints;
+import aquality.tracking.integrations.core.models.Suite;
+import aquality.tracking.integrations.core.models.Test;
+import aquality.tracking.integrations.core.models.TestResult;
+import aquality.tracking.integrations.core.models.TestRun;
+import io.cucumber.core.internal.gherkin.AstBuilder;
+import io.cucumber.core.internal.gherkin.Parser;
+import io.cucumber.core.internal.gherkin.TokenMatcher;
+import io.cucumber.core.internal.gherkin.ast.Feature;
+import io.cucumber.core.internal.gherkin.ast.GherkinDocument;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
+import org.apache.commons.lang3.exception.ExceptionUtils;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
+
+import static java.lang.String.format;
 
 public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
 
-    @Override
-    public void setEventPublisher(EventPublisher eventPublisher) {
-        eventPublisher.registerHandlerFor(TestRunStarted.class, testRunStartedEventHandler);
-        eventPublisher.registerHandlerFor(TestCaseStarted.class, testCaseStarted);
-        eventPublisher.registerHandlerFor(TestCaseFinished.class, testCaseFinished);
-        eventPublisher.registerHandlerFor(TestRunFinished.class, testRunFinishedEventHandler);
+    private static final String SUITE_NAME = "Test Suite"; // TODO: get from properties
+    private static final String BUILD_NAME = "New build"; // TODO: get from properties
+    private static final String ENV = "Test"; // TODO: get from properties
+    private static final String EXECUTOR = "CI"; // TODO: get from properties
+    private static final String CI_BUILD = "LINK_TO_CI_BUILD"; // TODO: get from properties
+    private static final int DEBUG = 0; // TODO: get from properties
+
+    private static TestRun currentTestRun;
+    private static Suite currentSuite;
+
+    private final ThreadLocal<Test> currentTest = new InheritableThreadLocal<>();
+    private final ThreadLocal<TestResult> currentTestResult = new InheritableThreadLocal<>();
+    private final ThreadLocal<Feature> currentFeature = new InheritableThreadLocal<>();
+
+    private final SuiteEndpoints suiteEndpoints;
+    private final TestRunEndpoints testRunEndpoints;
+    private final TestEndpoints testEndpoints;
+    private final TestResultEndpoints testResultEndpoints;
+
+    public AqualityTrackingCucumber5Jvm() {
+        suiteEndpoints = new SuiteEndpoints();
+        testRunEndpoints = new TestRunEndpoints();
+        testEndpoints = new TestEndpoints();
+        testResultEndpoints = new TestResultEndpoints();
     }
 
-    private EventHandler<TestRunStarted> testRunStartedEventHandler = event -> {
-        // 1. Find suite by name (get from system properties?) - store ID
-        // 2. Create new test run - /api/public/testrun/start
-    };
+    @Override
+    public void setEventPublisher(final EventPublisher eventPublisher) {
+        eventPublisher.registerHandlerFor(TestSourceRead.class, this::handleTestSourceReadEvent);
 
-    private EventHandler<TestCaseStarted> testCaseStarted = event -> {
-        // 3. Find test
-        // 4. Create test if not exists (with suite) else add test to suite
-        // 5. Add test to suite (the same as 3?)
-        // 6. Start test result - /api/public/test/result/start
-    };
+        eventPublisher.registerHandlerFor(TestRunStarted.class, this::handleTestRunStartedEvent);
+        eventPublisher.registerHandlerFor(TestRunFinished.class, this::handleTestRunFinishedEvent);
 
-    private EventHandler<TestCaseFinished> testCaseFinished = event -> {
-        // 7. Finish test result - /api/public/test/result/finish
-    };
+        eventPublisher.registerHandlerFor(TestCaseStarted.class, this::handleTestCaseStartedEvent);
+        eventPublisher.registerHandlerFor(TestCaseFinished.class, this::handleTestCaseFinishedEvent);
+    }
 
-    private EventHandler<TestRunFinished> testRunFinishedEventHandler = event -> {
-        // 8. Finish test run - /api/public/testrun/finish
-    };
+    private void handleTestSourceReadEvent(final TestSourceRead event) {
+        Parser<GherkinDocument> parser = new Parser<>(new AstBuilder());
+        TokenMatcher matcher = new TokenMatcher();
+        GherkinDocument gherkinDocument = parser.parse(event.getSource(), matcher);
+        currentFeature.set(gherkinDocument.getFeature());
+    }
+
+    private void handleTestRunStartedEvent(final TestRunStarted event) {
+        currentSuite = suiteEndpoints.createSuite(SUITE_NAME);
+        currentTestRun = testRunEndpoints.startTestRun(currentSuite.getId(), BUILD_NAME, ENV, EXECUTOR, CI_BUILD, DEBUG);
+    }
+
+    private void handleTestRunFinishedEvent(final TestRunFinished event) {
+        testRunEndpoints.finishTestRun(currentTestRun.getId());
+    }
+
+    private void handleTestCaseStartedEvent(final TestCaseStarted event) {
+        final String testName = constructTestCaseName(event.getTestCase());
+        final List<Test> foundTests = testEndpoints.findTest(testName);
+        if (foundTests.isEmpty()) {
+            Test newTest = testEndpoints.createTest(testName, Collections.singletonList(currentSuite));
+            currentTest.set(newTest);
+        } else {
+            Test foundTest = foundTests.get(0);
+            List<Suite> testSuites = foundTest.getSuites();
+            testSuites.add(currentSuite);
+            Test test = testEndpoints.updateTest(foundTest.getId(), foundTest.getName(), testSuites);
+            currentTest.set(test);
+        }
+        TestResult testResult = testResultEndpoints.startTestResult(currentTestRun.getId(), currentTest.get().getId());
+        currentTestResult.set(testResult);
+    }
+
+    private String constructTestCaseName(final TestCase testCase) {
+        String testCaseName = currentFeature.get().getName().concat(testCase.getName());
+
+        if (testCase.getKeyword().equals("Scenario Outline")) {
+            try (Stream<String> lines = Files.lines(Paths.get(testCase.getUri()))) {
+                long numberOfLinesToSkip = testCase.getLine() - 1L;
+                String exampleId = lines.skip(numberOfLinesToSkip)
+                        .findFirst().orElse("")
+                        .replaceAll("[\\s+|]", "");
+                testCaseName = testCaseName.concat(exampleId);
+            } catch (IOException e) {
+                throw new AqualityUncheckedException("Failed to get name of Scenario with Outline", e);
+            }
+        }
+        return testCaseName;
+    }
+
+    private void handleTestCaseFinishedEvent(final TestCaseFinished event) {
+        int finalResultId;
+        String failReason = "";
+
+        switch (event.getResult().getStatus()) {
+            case FAILED:
+                finalResultId = FinalResultId.FAILED;
+                failReason = formatErrorMessage(event.getResult().getError());
+                break;
+            case PASSED:
+                finalResultId = FinalResultId.PASSED;
+                break;
+            case PENDING:
+            case SKIPPED:
+                finalResultId = FinalResultId.PENDING;
+                failReason = "Test skipped";
+                break;
+            default:
+                finalResultId = FinalResultId.NOT_EXECUTED;
+        }
+        testResultEndpoints.finishTestResult(currentTestResult.get().getId(), finalResultId, failReason);
+    }
+
+    private String formatErrorMessage(Throwable error) {
+        String message = error.getMessage().split("\n")[0];
+        String stackTrace = ExceptionUtils.getStackTrace(error);
+        return format("Message:%n%s%n%nStack Trace:%n%s", message, stackTrace);
+    }
 }
