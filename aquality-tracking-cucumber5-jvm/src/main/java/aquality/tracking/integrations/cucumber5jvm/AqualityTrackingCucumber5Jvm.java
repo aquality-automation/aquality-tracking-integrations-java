@@ -1,6 +1,5 @@
 package aquality.tracking.integrations.cucumber5jvm;
 
-import aquality.tracking.integrations.core.FinalResultId;
 import aquality.tracking.integrations.core.endpoints.SuiteEndpoints;
 import aquality.tracking.integrations.core.endpoints.TestEndpoints;
 import aquality.tracking.integrations.core.endpoints.TestResultEndpoints;
@@ -16,12 +15,9 @@ import io.cucumber.core.internal.gherkin.ast.Feature;
 import io.cucumber.core.internal.gherkin.ast.GherkinDocument;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.util.Collections;
 import java.util.List;
-
-import static java.lang.String.format;
 
 public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
 
@@ -96,31 +92,9 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
     }
 
     private void handleTestCaseFinishedEvent(final TestCaseFinished event) {
-        int finalResultId;
-        String failReason = "";
-
-        switch (event.getResult().getStatus()) {
-            case FAILED:
-                finalResultId = FinalResultId.FAILED;
-                failReason = formatErrorMessage(event.getResult().getError());
-                break;
-            case PASSED:
-                finalResultId = FinalResultId.PASSED;
-                break;
-            case PENDING:
-            case SKIPPED:
-                finalResultId = FinalResultId.PENDING;
-                failReason = "Test skipped";
-                break;
-            default:
-                finalResultId = FinalResultId.NOT_EXECUTED;
-        }
-        testResultEndpoints.finishTestResult(currentTestResult.get().getId(), finalResultId, failReason);
-    }
-
-    private String formatErrorMessage(Throwable error) {
-        String message = error.getMessage().split("\n")[0];
-        String stackTrace = ExceptionUtils.getStackTrace(error);
-        return format("Message:%n%s%n%nStack Trace:%n%s", message, stackTrace);
+        TestCaseResultParser testCaseResultParser = new TestCaseResultParser(event.getResult());
+        TestCaseResultParser.TestCaseResult testCaseResult = testCaseResultParser.parse();
+        testResultEndpoints.finishTestResult(currentTestResult.get().getId(),
+                testCaseResult.getFinalResultId(), testCaseResult.getFailReason());
     }
 }
