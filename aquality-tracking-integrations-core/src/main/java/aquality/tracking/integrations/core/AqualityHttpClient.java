@@ -11,6 +11,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -20,24 +21,24 @@ import static java.lang.String.format;
 
 public class AqualityHttpClient {
 
-    public String sendGET(final URI uri, final List<Header> headers) throws AqualityException {
+    public String sendGET(final URI uri, final List<Header> headers) {
         HttpGet request = new HttpGet(uri);
         addHeaders(request, headers);
         return sendRequest(request);
     }
 
-    public String sendPOST(final URI uri, final List<Header> headers, final String body) throws AqualityException {
+    public String sendPOST(final URI uri, final List<Header> headers, final String body) {
         HttpPost request = new HttpPost(uri);
         addHeaders(request, headers);
         try {
             request.setEntity(new StringEntity(body));
         } catch (UnsupportedEncodingException e) {
-            throw new AqualityException("Exception occurred during set request body", e);
+            throw new UncheckedIOException(format("Exception occurred during set request body:%n%s", body), e);
         }
         return sendRequest(request);
     }
 
-    private String sendRequest(final HttpUriRequest httpRequest) throws AqualityException {
+    private String sendRequest(final HttpUriRequest httpRequest) {
         final String response;
         try (CloseableHttpClient httpClient = HttpClients.createDefault()) {
             try (CloseableHttpResponse httpResponse = httpClient.execute(httpRequest)) {
@@ -45,7 +46,7 @@ public class AqualityHttpClient {
                 response = processEntity(httpResponse.getEntity());
             }
         } catch (IOException e) {
-            throw new AqualityException(format("Exception occurred during sending request to %s",
+            throw new UncheckedIOException(format("Exception occurred during sending request to %s",
                     httpRequest.getURI()), e);
         }
         return response;
@@ -55,10 +56,10 @@ public class AqualityHttpClient {
         headers.forEach(request::addHeader);
     }
 
-    private void processStatusLine(StatusLine statusLine) throws AqualityException {
+    private void processStatusLine(StatusLine statusLine) {
         int statusCode = statusLine.getStatusCode();
         if (statusCode != HttpStatus.SC_OK) {
-            throw new AqualityException(format("Bad status code: %d. Reason: %s",
+            throw new RuntimeException(format("Bad status code: %d. Reason: %s",
                     statusCode, statusLine.getReasonPhrase()));
         }
     }

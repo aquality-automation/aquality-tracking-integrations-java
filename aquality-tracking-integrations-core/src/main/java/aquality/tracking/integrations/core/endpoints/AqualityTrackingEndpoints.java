@@ -1,6 +1,5 @@
 package aquality.tracking.integrations.core.endpoints;
 
-import aquality.tracking.integrations.core.AqualityException;
 import aquality.tracking.integrations.core.AqualityHttpClient;
 import aquality.tracking.integrations.core.Configuration;
 import org.apache.commons.codec.binary.Base64;
@@ -46,11 +45,11 @@ public abstract class AqualityTrackingEndpoints {
         return new BasicHeader(HttpHeaders.AUTHORIZATION, authHeader);
     }
 
-    protected URI buildURI(final String path) throws AqualityException {
+    protected URI buildURI(final String path) {
         return buildURI(path, new HashMap<>());
     }
 
-    protected URI buildURI(final String path, final Map<String, String> params) throws AqualityException {
+    protected URI buildURI(final String path, final Map<String, String> params) {
         URI uri;
         try {
             URIBuilder uriBuilder = new URIBuilder(CONFIG.getHost());
@@ -58,7 +57,7 @@ public abstract class AqualityTrackingEndpoints {
             params.forEach(uriBuilder::setParameter);
             uri = uriBuilder.build();
         } catch (URISyntaxException e) {
-            throw new AqualityException("Exception during build URI", e);
+            throw new RuntimeException("Exception during build URI", e);
         }
         return uri;
     }

@@ -1,6 +1,5 @@
 package aquality.tracking.integrations.core.endpoints;
 
-import aquality.tracking.integrations.core.AqualityException;
 import aquality.tracking.integrations.core.models.TestResult;
 import aquality.tracking.integrations.core.utilities.JsonMapper;
 
@@ -13,7 +12,7 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints {
     private static final String START_TEST_RESULT_ENDPOINT = "/api/public/test/result/start";
     private static final String FINISH_TEST_RESULT_ENDPOINT = "/api/public/test/result/finish";
 
-    public TestResult startTestResult(int testRunId, int testId) throws AqualityException {
+    public TestResult startTestResult(int testRunId, int testId) {
         Map<String, String> uriParams = new HashMap<String, String>() {{
             put("project_id", String.valueOf(CONFIG.getProjectId()));
             put("test_run_id", String.valueOf(testRunId));
@@ -24,7 +23,7 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints {
         return JsonMapper.mapStringContent(response, TestResult.class);
     }
 
-    public TestResult finishTestResult(int testResultId, int finalResultId, final String failReason) throws AqualityException {
+    public TestResult finishTestResult(int testResultId, int finalResultId, final String failReason) {
         Map<String, Object> body = new HashMap<String, Object>() {{
            put("id", testResultId);
            put("project_id", CONFIG.getProjectId());
