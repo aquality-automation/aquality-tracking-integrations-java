@@ -1,6 +1,5 @@
 package aquality.tracking.integrations.cucumber5jvm;
 
-import aquality.tracking.integrations.core.AqualityUncheckedException;
 import aquality.tracking.integrations.core.FinalResultId;
 import aquality.tracking.integrations.core.endpoints.SuiteEndpoints;
 import aquality.tracking.integrations.core.endpoints.TestEndpoints;
@@ -19,12 +18,8 @@ import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
@@ -84,7 +79,7 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
     }
 
     private void handleTestCaseStartedEvent(final TestCaseStarted event) {
-        final String testName = constructTestCaseName(event.getTestCase());
+        final String testName = new TestCaseNameParser(currentFeature.get(), event.getTestCase()).getScenarioName();
         final List<Test> foundTests = testEndpoints.findTest(testName);
         if (foundTests.isEmpty()) {
             Test newTest = testEndpoints.createTest(testName, Collections.singletonList(currentSuite));
@@ -96,25 +91,8 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
             Test test = testEndpoints.updateTest(foundTest.getId(), foundTest.getName(), testSuites);
             currentTest.set(test);
         }
-        TestResult testResult = testResultEndpoints.startTestResult(currentTestRun.getId(), currentTest.get().getId());
+        final TestResult testResult = testResultEndpoints.startTestResult(currentTestRun.getId(), currentTest.get().getId());
         currentTestResult.set(testResult);
-    }
-
-    private String constructTestCaseName(final TestCase testCase) {
-        String testCaseName = currentFeature.get().getName().concat(testCase.getName());
-
-        if (testCase.getKeyword().equals("Scenario Outline")) {
-            try (Stream<String> lines = Files.lines(Paths.get(testCase.getUri()))) {
-                long numberOfLinesToSkip = testCase.getLine() - 1L;
-                String exampleId = lines.skip(numberOfLinesToSkip)
-                        .findFirst().orElse("")
-                        .replaceAll("[\\s+|]", "");
-                testCaseName = testCaseName.concat(exampleId);
-            } catch (IOException e) {
-                throw new AqualityUncheckedException("Failed to get name of Scenario with Outline", e);
-            }
-        }
-        return testCaseName;
     }
 
     private void handleTestCaseFinishedEvent(final TestCaseFinished event) {
