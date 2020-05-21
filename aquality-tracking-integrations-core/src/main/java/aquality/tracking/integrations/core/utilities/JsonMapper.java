@@ -9,7 +9,7 @@ import static java.lang.String.format;
 
 public class JsonMapper {
 
-    private JsonMapper(){
+    private JsonMapper() {
     }
 
     public static  <T> T mapFileContent(final String filename, Class<T> tClass) {

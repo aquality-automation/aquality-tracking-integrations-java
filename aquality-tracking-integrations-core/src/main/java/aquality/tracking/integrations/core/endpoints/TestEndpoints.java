@@ -15,12 +15,12 @@ public class TestEndpoints extends AqualityTrackingEndpoints {
     private static final String TEST_ENDPOINT = "/api/test";
 
     public List<Test> findTest(final String name) {
-        Map<String, String> params = new HashMap<String, String>() {{
+        Map<String, String> queryParams = new HashMap<String, String>() {{
             put("name", name);
             put("project_id", String.valueOf(CONFIG.getProjectId()));
         }};
 
-        URI uri = buildURI(TEST_ENDPOINT, params);
+        URI uri = buildURI(TEST_ENDPOINT, queryParams);
         String response = getHttpClient().sendGET(uri, getHeaders());
         return JsonMapper.mapStringContent(response, new TypeReference<List<Test>>() {});
     }

@@ -29,11 +29,12 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints {
     }
 
     public TestRun finishTestRun(int testRunId) {
-        Map<String, String> uriParams = new HashMap<String, String>() {{
+        Map<String, String> queryParams = new HashMap<String, String>() {{
             put("project_id", String.valueOf(CONFIG.getProjectId()));
             put("id", String.valueOf(testRunId));
         }};
-        URI uri = buildURI(FINISH_TESTRUN_ENDPOINT, uriParams);
+
+        URI uri = buildURI(FINISH_TESTRUN_ENDPOINT, queryParams);
         String response = getHttpClient().sendGET(uri, getHeaders());
         return JsonMapper.mapStringContent(response, TestRun.class);
     }

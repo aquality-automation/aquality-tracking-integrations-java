@@ -53,24 +53,24 @@ public abstract class AqualityTrackingEndpoints {
         return buildURI(path, new HashMap<>());
     }
 
-    protected URI buildURI(final String path, final Map<String, String> params) {
+    protected URI buildURI(final String path, final Map<String, String> queryParams) {
         URI uri;
         try {
             URIBuilder uriBuilder = new URIBuilder(CONFIG.getHost());
             uriBuilder.setPath(path);
-            params.forEach((key, value) -> uriBuilder.setParameter(key, encodeParameter(value)));
+            queryParams.forEach((param, value) -> uriBuilder.setParameter(param, encodeParameter(value)));
             uri = uriBuilder.build();
         } catch (URISyntaxException e) {
-            throw new AqualityUncheckedException("Exception during build URI", e);
+            throw new AqualityUncheckedException("Exception during building URI", e);
         }
         return uri;
     }
 
-    private String encodeParameter(final String parameterValue) {
+    private String encodeParameter(final String value) {
         try {
-            return URLEncoder.encode(parameterValue, StandardCharsets.UTF_8.toString());
+            return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new AqualityUncheckedException(format("Exception occurred while encoding URI parameter: %s", parameterValue), e);
+            throw new AqualityUncheckedException(format("Exception occurred while encoding query parameter : %s", value), e);
         }
     }
 }
