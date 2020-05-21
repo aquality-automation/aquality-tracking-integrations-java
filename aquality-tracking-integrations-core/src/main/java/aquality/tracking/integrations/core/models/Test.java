@@ -14,5 +14,11 @@ public class Test {
     @JsonProperty("project_id")
     private Integer projectId;
     @JsonProperty("suites")
-    protected List<Suite> suites;
+    private List<Suite> suites;
+    @JsonProperty("resolution_colors")
+    private String resolutionColors;
+    @JsonProperty("result_colors")
+    private String resultColors;
+    @JsonProperty("result_ids")
+    private String resultIds;
 }

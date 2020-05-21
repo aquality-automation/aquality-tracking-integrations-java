@@ -8,8 +8,12 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicHeader;
 
+import java.io.UncheckedIOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -54,11 +58,19 @@ public abstract class AqualityTrackingEndpoints {
         try {
             URIBuilder uriBuilder = new URIBuilder(CONFIG.getHost());
             uriBuilder.setPath(path);
-            params.forEach(uriBuilder::setParameter);
+            params.forEach((key, value) -> uriBuilder.setParameter(key, encodeParameter(value)));
             uri = uriBuilder.build();
         } catch (URISyntaxException e) {
             throw new RuntimeException("Exception during build URI", e);
         }
         return uri;
+    }
+
+    private String encodeParameter(final String parameterValue) {
+        try {
+            return URLEncoder.encode(parameterValue, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException e) {
+            throw new UncheckedIOException(format("Exception occurred while encoding URI parameter: %s", parameterValue), e);
+        }
     }
 }

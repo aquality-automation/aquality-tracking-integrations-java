@@ -25,10 +25,10 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints {
 
     public TestResult finishTestResult(int testResultId, int finalResultId, final String failReason) {
         Map<String, Object> body = new HashMap<String, Object>() {{
-           put("id", testResultId);
-           put("project_id", CONFIG.getProjectId());
-           put("final_result_id", finalResultId);
-           put("fail_reason", failReason);
+            put("id", testResultId);
+            put("project_id", CONFIG.getProjectId());
+            put("final_result_id", finalResultId);
+            put("fail_reason", failReason);
         }};
         URI uri = buildURI(FINISH_TEST_RESULT_ENDPOINT);
         String response = getHttpClient().sendPOST(uri, getHeaders(), JsonMapper.getJson(body));
