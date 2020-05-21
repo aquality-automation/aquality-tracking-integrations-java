@@ -54,16 +54,14 @@ public abstract class AqualityTrackingEndpoints {
     }
 
     protected URI buildURI(final String path, final Map<String, String> queryParams) {
-        URI uri;
         try {
             URIBuilder uriBuilder = new URIBuilder(CONFIG.getHost());
             uriBuilder.setPath(path);
             queryParams.forEach((param, value) -> uriBuilder.setParameter(param, encodeParameter(value)));
-            uri = uriBuilder.build();
+            return uriBuilder.build();
         } catch (URISyntaxException e) {
             throw new AqualityUncheckedException("Exception during building URI", e);
         }
-        return uri;
     }
 
     private String encodeParameter(final String value) {
