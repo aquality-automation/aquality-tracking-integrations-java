@@ -27,4 +27,6 @@ public class TestRun {
     private String executionEnvironment;
     @JsonProperty("milestone_id")
     private Integer milestoneId;
+    @JsonProperty("author")
+    private String author;
 }

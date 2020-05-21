@@ -11,7 +11,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
-import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
@@ -33,7 +32,7 @@ public class AqualityHttpClient {
         try {
             request.setEntity(new StringEntity(body));
         } catch (UnsupportedEncodingException e) {
-            throw new UncheckedIOException(format("Exception occurred during set request body:%n%s", body), e);
+            throw new AqualityUncheckedException(format("Exception occurred during set request body:%n%s", body), e);
         }
         return sendRequest(request);
     }
@@ -46,7 +45,7 @@ public class AqualityHttpClient {
                 response = processEntity(httpResponse.getEntity());
             }
         } catch (IOException e) {
-            throw new UncheckedIOException(format("Exception occurred during sending request to %s",
+            throw new AqualityUncheckedException(format("Exception occurred during sending request to %s",
                     httpRequest.getURI()), e);
         }
         return response;
@@ -59,12 +58,15 @@ public class AqualityHttpClient {
     private void processStatusLine(StatusLine statusLine) {
         int statusCode = statusLine.getStatusCode();
         if (statusCode != HttpStatus.SC_OK) {
-            throw new RuntimeException(format("Bad status code: %d. Reason: %s",
-                    statusCode, statusLine.getReasonPhrase()));
+            throw new AqualityUncheckedException(format("Status code: %d", statusCode));
         }
     }
 
-    private String processEntity(HttpEntity httpEntity) throws IOException {
-        return EntityUtils.toString(httpEntity, StandardCharsets.UTF_8.name());
+    private String processEntity(HttpEntity httpEntity) {
+        try {
+            return EntityUtils.toString(httpEntity, StandardCharsets.UTF_8.name());
+        } catch (IOException e) {
+            throw new AqualityUncheckedException("Exception occurred during processing response entity", e);
+        }
     }
 }

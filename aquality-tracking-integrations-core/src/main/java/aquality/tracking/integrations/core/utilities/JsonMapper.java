@@ -1,10 +1,9 @@
 package aquality.tracking.integrations.core.utilities;
 
+import aquality.tracking.integrations.core.AqualityUncheckedException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import java.io.UncheckedIOException;
 
 import static java.lang.String.format;
 
@@ -22,7 +21,7 @@ public class JsonMapper {
         try {
             return new ObjectMapper().readValue(content, typeReference);
         } catch (JsonProcessingException e) {
-            throw new UncheckedIOException(format("Exception occurred during mapping %n%s%n to %s",
+            throw new AqualityUncheckedException(format("Exception occurred during mapping %n%s%n to %s",
                     content, typeReference.getType()), e);
         }
     }
@@ -31,7 +30,7 @@ public class JsonMapper {
         try {
             return new ObjectMapper().readValue(content, tClass);
         } catch (JsonProcessingException e) {
-            throw new UncheckedIOException(format("Exception occurred during mapping %n%s%n to %s",
+            throw new AqualityUncheckedException(format("Exception occurred during mapping %n%s%n to %s",
                     content, tClass.getName()), e);
         }
     }
@@ -40,7 +39,7 @@ public class JsonMapper {
         try {
             return new ObjectMapper().writeValueAsString(data);
         } catch (JsonProcessingException e) {
-            throw new UncheckedIOException(format("Exception occurred during converting %s to JSON", data), e);
+            throw new AqualityUncheckedException(format("Exception occurred during converting %s to JSON", data), e);
         }
     }
 }

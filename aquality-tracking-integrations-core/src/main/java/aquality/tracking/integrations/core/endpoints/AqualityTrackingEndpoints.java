@@ -1,5 +1,6 @@
 package aquality.tracking.integrations.core.endpoints;
 
+import aquality.tracking.integrations.core.AqualityUncheckedException;
 import aquality.tracking.integrations.core.AqualityHttpClient;
 import aquality.tracking.integrations.core.Configuration;
 import org.apache.commons.codec.binary.Base64;
@@ -8,7 +9,6 @@ import org.apache.http.HttpHeaders;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.message.BasicHeader;
 
-import java.io.UncheckedIOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -61,7 +61,7 @@ public abstract class AqualityTrackingEndpoints {
             params.forEach((key, value) -> uriBuilder.setParameter(key, encodeParameter(value)));
             uri = uriBuilder.build();
         } catch (URISyntaxException e) {
-            throw new RuntimeException("Exception during build URI", e);
+            throw new AqualityUncheckedException("Exception during build URI", e);
         }
         return uri;
     }
@@ -70,7 +70,7 @@ public abstract class AqualityTrackingEndpoints {
         try {
             return URLEncoder.encode(parameterValue, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new UncheckedIOException(format("Exception occurred while encoding URI parameter: %s", parameterValue), e);
+            throw new AqualityUncheckedException(format("Exception occurred while encoding URI parameter: %s", parameterValue), e);
         }
     }
 }

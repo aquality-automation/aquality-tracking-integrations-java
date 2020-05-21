@@ -12,12 +12,16 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints {
     private static final String START_TESTRUN_ENDPOINT = "/api/public/testrun/start";
     private static final String FINISH_TESTRUN_ENDPOINT = "/api/public/testrun/finish";
 
-    public TestRun startTestRun(int testSuiteId, final String buildName, final String executionEnvironment) {
+    public TestRun startTestRun(int testSuiteId, final String buildName, final String environment,
+                                final String executor, final String ciBuild, int debug) {
         TestRun testRun = new TestRun();
         testRun.setTestSuiteId(testSuiteId);
         testRun.setProjectId(CONFIG.getProjectId());
         testRun.setBuildName(buildName);
-        testRun.setExecutionEnvironment(executionEnvironment);
+        testRun.setExecutionEnvironment(environment);
+        testRun.setAuthor(executor);
+        testRun.setCiBuild(ciBuild);
+        testRun.setDebug(debug);
 
         URI uri = buildURI(START_TESTRUN_ENDPOINT);
         String response = getHttpClient().sendPOST(uri, getHeaders(), JsonMapper.getJson(testRun));
