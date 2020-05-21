@@ -9,7 +9,7 @@ import static java.lang.String.format;
 
 public class JsonMapper {
 
-    private JsonMapper(){
+    private JsonMapper() {
     }
 
     public static  <T> T mapFileContent(final String filename, Class<T> tClass) {
@@ -35,7 +35,7 @@ public class JsonMapper {
         }
     }
 
-    public static String getJson(Object data) {
+    public static String getJson(final Object data) {
         try {
             return new ObjectMapper().writeValueAsString(data);
         } catch (JsonProcessingException e) {
