@@ -71,7 +71,7 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
         currentSuite = suiteEndpoints.createSuite(configuration.getSuiteName());
         currentTestRun = testRunEndpoints.startTestRun(currentSuite.getId(), configuration.getBuildName(),
                 configuration.getEnvironment(), configuration.getExecutor(),
-                configuration.getCiBuild(), configuration.getDebug());
+                configuration.getCiBuild(), configuration.isDebug());
     }
 
     private void handleTestRunFinishedEvent(final TestRunFinished event) {
