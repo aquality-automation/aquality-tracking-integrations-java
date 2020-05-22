@@ -1,13 +1,17 @@
 package aquality.tracking.integrations.cucumber5jvm;
 
-import aquality.tracking.integrations.core.endpoints.SuiteEndpoints;
-import aquality.tracking.integrations.core.endpoints.TestEndpoints;
-import aquality.tracking.integrations.core.endpoints.TestResultEndpoints;
-import aquality.tracking.integrations.core.endpoints.TestRunEndpoints;
+import aquality.tracking.integrations.core.Configuration;
+import aquality.tracking.integrations.core.ServicesModule;
+import aquality.tracking.integrations.core.endpoints.ISuiteEndpoints;
+import aquality.tracking.integrations.core.endpoints.ITestEndpoints;
+import aquality.tracking.integrations.core.endpoints.ITestResultEndpoints;
+import aquality.tracking.integrations.core.endpoints.ITestRunEndpoints;
 import aquality.tracking.integrations.core.models.Suite;
 import aquality.tracking.integrations.core.models.Test;
 import aquality.tracking.integrations.core.models.TestResult;
 import aquality.tracking.integrations.core.models.TestRun;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import io.cucumber.core.internal.gherkin.AstBuilder;
 import io.cucumber.core.internal.gherkin.Parser;
 import io.cucumber.core.internal.gherkin.TokenMatcher;
@@ -21,13 +25,6 @@ import java.util.List;
 
 public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
 
-    private static final String SUITE_NAME = "Test Suite"; // TODO: get from properties
-    private static final String BUILD_NAME = "New build"; // TODO: get from properties
-    private static final String ENV = "Test"; // TODO: get from properties
-    private static final String EXECUTOR = "CI"; // TODO: get from properties
-    private static final String CI_BUILD = "LINK_TO_CI_BUILD"; // TODO: get from properties
-    private static final int DEBUG = 0; // TODO: get from properties
-
     private static TestRun currentTestRun;
     private static Suite currentSuite;
 
@@ -35,27 +32,33 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
     private final ThreadLocal<TestResult> currentTestResult = new InheritableThreadLocal<>();
     private final ThreadLocal<Feature> currentFeature = new InheritableThreadLocal<>();
 
-    private final SuiteEndpoints suiteEndpoints;
-    private final TestRunEndpoints testRunEndpoints;
-    private final TestEndpoints testEndpoints;
-    private final TestResultEndpoints testResultEndpoints;
+    private static final Injector INJECTOR = Guice.createInjector(new ServicesModule());
+
+    private final Configuration configuration;
+    private final ISuiteEndpoints suiteEndpoints;
+    private final ITestRunEndpoints testRunEndpoints;
+    private final ITestEndpoints testEndpoints;
+    private final ITestResultEndpoints testResultEndpoints;
 
     public AqualityTrackingCucumber5Jvm() {
-        suiteEndpoints = new SuiteEndpoints();
-        testRunEndpoints = new TestRunEndpoints();
-        testEndpoints = new TestEndpoints();
-        testResultEndpoints = new TestResultEndpoints();
+        configuration = INJECTOR.getInstance(Configuration.class);
+        suiteEndpoints = INJECTOR.getInstance(ISuiteEndpoints.class);
+        testRunEndpoints = INJECTOR.getInstance(ITestRunEndpoints.class);
+        testEndpoints = INJECTOR.getInstance(ITestEndpoints.class);
+        testResultEndpoints = INJECTOR.getInstance(ITestResultEndpoints.class);
     }
 
     @Override
     public void setEventPublisher(final EventPublisher eventPublisher) {
-        eventPublisher.registerHandlerFor(TestSourceRead.class, this::handleTestSourceReadEvent);
+        if (configuration.isEnabled()) {
+            eventPublisher.registerHandlerFor(TestSourceRead.class, this::handleTestSourceReadEvent);
 
-        eventPublisher.registerHandlerFor(TestRunStarted.class, this::handleTestRunStartedEvent);
-        eventPublisher.registerHandlerFor(TestRunFinished.class, this::handleTestRunFinishedEvent);
+            eventPublisher.registerHandlerFor(TestRunStarted.class, this::handleTestRunStartedEvent);
+            eventPublisher.registerHandlerFor(TestRunFinished.class, this::handleTestRunFinishedEvent);
 
-        eventPublisher.registerHandlerFor(TestCaseStarted.class, this::handleTestCaseStartedEvent);
-        eventPublisher.registerHandlerFor(TestCaseFinished.class, this::handleTestCaseFinishedEvent);
+            eventPublisher.registerHandlerFor(TestCaseStarted.class, this::handleTestCaseStartedEvent);
+            eventPublisher.registerHandlerFor(TestCaseFinished.class, this::handleTestCaseFinishedEvent);
+        }
     }
 
     private void handleTestSourceReadEvent(final TestSourceRead event) {
@@ -66,8 +69,10 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
     }
 
     private void handleTestRunStartedEvent(final TestRunStarted event) {
-        currentSuite = suiteEndpoints.createSuite(SUITE_NAME);
-        currentTestRun = testRunEndpoints.startTestRun(currentSuite.getId(), BUILD_NAME, ENV, EXECUTOR, CI_BUILD, DEBUG);
+        currentSuite = suiteEndpoints.createSuite(configuration.getSuiteName());
+        currentTestRun = testRunEndpoints.startTestRun(currentSuite.getId(), configuration.getBuildName(),
+                configuration.getEnvironment(), configuration.getExecutor(),
+                configuration.getCiBuild(), configuration.getDebug());
     }
 
     private void handleTestRunFinishedEvent(final TestRunFinished event) {

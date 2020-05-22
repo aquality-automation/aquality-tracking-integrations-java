@@ -1,16 +1,13 @@
 package aquality.tracking.integrations.cucumber5jvm;
 
-import aquality.tracking.integrations.core.AqualityUncheckedException;
-import io.cucumber.core.internal.gherkin.ast.Examples;
 import io.cucumber.core.internal.gherkin.ast.Feature;
 import io.cucumber.core.internal.gherkin.ast.ScenarioOutline;
 import io.cucumber.core.internal.gherkin.ast.TableRow;
 import io.cucumber.plugin.event.TestCase;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import static java.lang.String.format;
 
 class TestCaseNameParser {
 
@@ -33,22 +30,22 @@ class TestCaseNameParser {
     }
 
     private String getScenarioOutlineName(final String scenarioName) {
-        final Examples examples = feature.getChildren().stream()
+        List<TableRow> examplesTableRows = feature.getChildren().stream()
                 .filter(child -> child.getName().equals(scenarioName))
                 .map(node -> (ScenarioOutline) node)
                 .map(outline -> outline.getExamples().get(0))
-                .findFirst()
-                .orElseThrow(() -> new AqualityUncheckedException(format("Examples for scenario '%s' not found",
-                        scenarioName)));
+                .flatMap(examples -> examples.getTableBody().stream())
+                .collect(Collectors.toList());
 
-        int currentExampleLine = testCase.getLine();
-        final List<TableRow> examplesTableRows = examples.getTableBody();
         int tableRowIndex = IntStream.range(0, examplesTableRows.size())
-                .filter(i -> examplesTableRows.get(i).getLocation().getLine() == currentExampleLine)
+                .filter(i -> examplesTableRows.get(i).getLocation().getLine() == testCase.getLine())
                 .findFirst()
-                .orElseThrow(() -> new AqualityUncheckedException(format("Example for scenario '%s' at line '%d' not found",
-                        scenarioName, currentExampleLine)));
+                .orElse(-1);
 
-        return scenarioName.concat(String.valueOf(tableRowIndex));
+        String scenarioOutlineName = "";
+        if (tableRowIndex != -1) {
+            scenarioOutlineName = scenarioName.concat(String.valueOf(tableRowIndex));
+        }
+        return scenarioOutlineName;
     }
 }
