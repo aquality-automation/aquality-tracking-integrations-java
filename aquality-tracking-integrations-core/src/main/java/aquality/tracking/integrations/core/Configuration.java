@@ -2,6 +2,8 @@ package aquality.tracking.integrations.core;
 
 import lombok.Data;
 
+import static aquality.tracking.integrations.core.utilities.EnvironmentReader.getValueOrDefault;
+
 @Data
 public class Configuration {
     private String host;
@@ -17,40 +19,26 @@ public class Configuration {
     private boolean debug;
 
     public boolean isEnabled() {
-        return getEnvVarOrDefault("aquality.isEnabled", Boolean.class, enabled);
+        return getValueOrDefault("aquality.enabled", Boolean.class, enabled);
     }
 
     public String getSuiteName() {
-        return getEnvVarOrDefault("aquality.suiteName", String.class, suiteName);
+        return getValueOrDefault("aquality.suiteName", String.class, suiteName);
     }
 
     public String getBuildName() {
-        return getEnvVarOrDefault("aquality.buildName", String.class, buildName);
+        return getValueOrDefault("aquality.buildName", String.class, buildName);
     }
 
     public String getEnvironment() {
-        return getEnvVarOrDefault("aquality.environment", String.class, environment);
+        return getValueOrDefault("aquality.environment", String.class, environment);
     }
 
     public String getCiBuild() {
-        return getEnvVarOrDefault("aquality.ciBuild", String.class, ciBuild);
+        return getValueOrDefault("aquality.ciBuild", String.class, ciBuild);
     }
 
     public boolean isDebug() {
-        return getEnvVarOrDefault("aquality.debug", Boolean.class, debug);
-    }
-
-    @SuppressWarnings("unchecked")
-    private <T> T getEnvVarOrDefault(final String varName, Class<T> tClass, T defaultValue) {
-        final String envVar = System.getProperty(varName);
-        if (envVar == null) {
-            return defaultValue;
-        }
-
-        T resultValue = null;
-        if (tClass.equals(Boolean.class)) {
-            resultValue = (T) Boolean.valueOf(envVar);
-        }
-        return resultValue;
+        return getValueOrDefault("aquality.debug", Boolean.class, debug);
     }
 }
