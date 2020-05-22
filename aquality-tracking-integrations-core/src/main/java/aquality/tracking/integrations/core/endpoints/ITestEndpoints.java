@@ -14,9 +14,5 @@ public interface ITestEndpoints {
      * @param suites List of Suites that Test belongs to.
      * @return Instance of new or updated Test.
      */
-    Test createTest(final String name, final List<Suite> suites);
-
-    List<Test> findTest(final String name);
-
-    Test updateTest(int id, final String name, final List<Suite> suites);
+    Test createOrUpdateTest(final String name, final List<Suite> suites);
 }
