@@ -14,7 +14,7 @@ public class Configuration {
     private String buildName;
     private String environment;
     private String ciBuild;
-    private int debug = 0;
+    private boolean debug;
 
     public boolean isEnabled() {
         String envVar = getEnvVar("aquality.isEnabled");
@@ -41,9 +41,9 @@ public class Configuration {
         return envVar != null ? envVar : ciBuild;
     }
 
-    public int getDebug() {
+    public boolean isDebug() {
         String envVar = getEnvVar("aquality.debug");
-        return envVar != null ? Integer.parseInt(envVar) : debug;
+        return envVar != null ? Boolean.parseBoolean(envVar) : debug;
     }
 
     private String getEnvVar(final String varName) {

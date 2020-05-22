@@ -11,11 +11,11 @@ public interface ITestRunEndpoints {
      * @param environment Name of execution environment.
      * @param executor    Name of author.
      * @param ciBuild     Link to the CI build of current Test Run.
-     * @param debug       Debug (1) or regular (0) execution. If debug Test Run won't be present in Aquality Tracking.
+     * @param debug       Debug (true) or regular (false) execution. If debug Test Run won't be present in Aquality Tracking.
      * @return Instance of started Test Run.
      */
     TestRun startTestRun(int testSuiteId, final String buildName, final String environment,
-                         final String executor, final String ciBuild, int debug);
+                         final String executor, final String ciBuild, boolean debug);
 
     /**
      * Finished Test Run.
