@@ -7,13 +7,10 @@ import java.util.List;
 
 @Data
 public class Test {
-    @JsonProperty("id")
     private Integer id;
-    @JsonProperty("name")
     private String name;
     @JsonProperty("project_id")
     private Integer projectId;
-    @JsonProperty("suites")
     private List<Suite> suites;
     @JsonProperty("resolution_colors")
     private String resolutionColors;

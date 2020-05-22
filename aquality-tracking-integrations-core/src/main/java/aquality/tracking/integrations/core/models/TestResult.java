@@ -7,7 +7,6 @@ import lombok.Data;
 public class TestResult {
     @JsonProperty("project_id")
     private Integer projectId;
-    @JsonProperty("id")
     private Integer id;
     @JsonProperty("test_id")
     private Integer testId;
@@ -15,9 +14,7 @@ public class TestResult {
     private Integer finalResultId;
     @JsonProperty("test_run_id")
     private Integer testRunId;
-    @JsonProperty("debug")
     private Integer debug;
-    @JsonProperty("updated")
     private String updated;
     @JsonProperty("start_date")
     private String startDate;
@@ -25,7 +22,6 @@ public class TestResult {
     private String finishDate;
     @JsonProperty("final_result_updated")
     private String finishResultUpdated;
-    @JsonProperty("pending")
     private Integer pending;
     @JsonProperty("fail_reason")
     private String failReason;
