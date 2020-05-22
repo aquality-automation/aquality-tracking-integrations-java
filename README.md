@@ -4,7 +4,7 @@ The repository contains adaptors for JVM-based test frameworks.
 
 ## How to use
 
-1. Add [aqualityTracking.json](./aquality-tracking-integrations-core/src/main/resources/aqualityTracking.json) file to `src/test/resources` with corresponding values.
+1. Add [aqualityTracking.json](./aquality-tracking-integrations-core/src/main/resources/aqualityTracking.json) file with corresponding values to `src/test/resources`.
 2. Define dependencies according to the selected test framework (see below).
 3. Run tests with the following parameters:
 
@@ -26,4 +26,4 @@ To use this adaptor with Cucumber 5 you have to add the following dependency:
 </dependency>
 ```
 
-Also you have to add plugin `aquality.tracking.integrations.cucumber5jvm.AqualityTrackingCucumber5Jvm` to Cucumber Test Runner. 
+Also you have to add plugin `aquality.tracking.integrations.cucumber5jvm.AqualityTrackingCucumber5Jvm` to the Cucumber Test Runner. 
