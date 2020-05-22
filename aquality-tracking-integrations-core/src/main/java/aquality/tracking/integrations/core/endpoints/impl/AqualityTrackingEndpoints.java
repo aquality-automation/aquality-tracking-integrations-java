@@ -68,7 +68,7 @@ public abstract class AqualityTrackingEndpoints {
         try {
             return URLEncoder.encode(value, StandardCharsets.UTF_8.toString());
         } catch (UnsupportedEncodingException e) {
-            throw new AqualityUncheckedException(format("Exception occurred while encoding query parameter : %s", value), e);
+            throw new AqualityUncheckedException(format("Exception occurred while encoding query parameter: %s", value), e);
         }
     }
 }

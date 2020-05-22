@@ -22,7 +22,7 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
     }
 
     public TestRun startTestRun(int testSuiteId, final String buildName, final String environment,
-                                final String executor, final String ciBuild, int debug) {
+                                final String executor, final String ciBuild, boolean debug) {
         TestRun testRun = new TestRun();
         testRun.setTestSuiteId(testSuiteId);
         testRun.setProjectId(getConfiguration().getProjectId());
@@ -30,7 +30,7 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
         testRun.setExecutionEnvironment(environment);
         testRun.setAuthor(executor);
         testRun.setCiBuild(ciBuild);
-        testRun.setDebug(debug);
+        testRun.setDebug(debug ? 1 : 0);
 
         URI uri = buildURI(START_TESTRUN_ENDPOINT);
         String response = getHttpClient().sendPOST(uri, getHeaders(), JsonMapper.getJson(testRun));
