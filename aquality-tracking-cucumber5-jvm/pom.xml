@@ -15,7 +15,7 @@
     </parent>
 
     <name>Aquality Tracking Cucumber 5 JVM</name>
-    <description>Plugin with Aquality Tracking integration for Cucumber 5 JVM.</description>
+    <description>Aquality Tracking integration for Cucumber 5 JVM.</description>
     <url>https://github.com/aquality-automation/aquality-tracking-integrations-java</url>
 
     <dependencies>

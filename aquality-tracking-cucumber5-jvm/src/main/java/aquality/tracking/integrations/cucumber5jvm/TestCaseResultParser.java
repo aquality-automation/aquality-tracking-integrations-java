@@ -18,14 +18,17 @@ class TestCaseResultParser {
     TestCaseResult parse() {
         TestCaseResult testCaseResult = new TestCaseResult();
         switch (result.getStatus()) {
+            case PASSED:
+                testCaseResult.setFinalResultId(FinalResultId.PASSED);
+                break;
             case FAILED:
                 testCaseResult.setFinalResultId(FinalResultId.FAILED);
                 testCaseResult.setFailReason(formatErrorMessage(result.getError()));
                 break;
-            case PASSED:
-                testCaseResult.setFinalResultId(FinalResultId.PASSED);
-                break;
             case PENDING:
+                testCaseResult.setFinalResultId(FinalResultId.PENDING);
+                testCaseResult.setFailReason(getShortErrorMessage(result.getError()));
+                break;
             case SKIPPED:
                 testCaseResult.setFinalResultId(FinalResultId.PENDING);
                 testCaseResult.setFailReason("Test skipped");
@@ -36,10 +39,14 @@ class TestCaseResultParser {
         return testCaseResult;
     }
 
-    private String formatErrorMessage(Throwable error) {
-        final String message = error.getMessage().split("\n")[0];
+    private String formatErrorMessage(final Throwable error) {
+        final String message = getShortErrorMessage(error);
         final String stackTrace = ExceptionUtils.getStackTrace(error);
         return format("Message:%n%s%n%nStack Trace:%n%s", message, stackTrace);
+    }
+
+    private String getShortErrorMessage(final Throwable error) {
+        return error.getMessage().split("\n")[0];
     }
 
     @Data
