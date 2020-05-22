@@ -12,7 +12,7 @@ public class JsonMapper {
     private JsonMapper() {
     }
 
-    public static  <T> T mapFileContent(final String filename, Class<T> tClass) {
+    public static <T> T mapFileContent(final String filename, Class<T> tClass) {
         String fileContent = FileReader.readResourceFile(filename);
         return mapStringContent(fileContent, tClass);
     }
