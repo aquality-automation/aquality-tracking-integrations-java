@@ -21,7 +21,6 @@ import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 
 import java.util.Collections;
-import java.util.List;
 
 public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
 
@@ -80,19 +79,10 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
     }
 
     private void handleTestCaseStartedEvent(final TestCaseStarted event) {
-        final String testName = new TestCaseNameParser(currentFeature.get(), event.getTestCase()).getScenarioName();
-        final List<Test> foundTests = testEndpoints.findTest(testName);
-        if (foundTests.isEmpty()) {
-            Test newTest = testEndpoints.createTest(testName, Collections.singletonList(currentSuite));
-            currentTest.set(newTest);
-        } else {
-            Test foundTest = foundTests.get(0);
-            List<Suite> testSuites = foundTest.getSuites();
-            testSuites.add(currentSuite);
-            Test test = testEndpoints.updateTest(foundTest.getId(), foundTest.getName(), testSuites);
-            currentTest.set(test);
-        }
-        final TestResult testResult = testResultEndpoints.startTestResult(currentTestRun.getId(), currentTest.get().getId());
+        String testName = new TestCaseNameParser(currentFeature.get(), event.getTestCase()).getScenarioName();
+        Test test = testEndpoints.createOrUpdateTest(testName, Collections.singletonList(currentSuite));
+        currentTest.set(test);
+        TestResult testResult = testResultEndpoints.startTestResult(currentTestRun.getId(), currentTest.get().getId());
         currentTestResult.set(testResult);
     }
 
