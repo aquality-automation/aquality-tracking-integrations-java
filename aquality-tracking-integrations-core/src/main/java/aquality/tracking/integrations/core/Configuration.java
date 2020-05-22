@@ -17,36 +17,40 @@ public class Configuration {
     private boolean debug;
 
     public boolean isEnabled() {
-        String envVar = getEnvVar("aquality.isEnabled");
-        return envVar != null ? Boolean.parseBoolean(envVar) : enabled;
+        return getEnvVarOrDefault("aquality.isEnabled", Boolean.class, enabled);
     }
 
     public String getSuiteName() {
-        String envVar = getEnvVar("aquality.suiteName");
-        return envVar != null ? envVar : suiteName;
+        return getEnvVarOrDefault("aquality.suiteName", String.class, suiteName);
     }
 
     public String getBuildName() {
-        String envVar = getEnvVar("aquality.buildName");
-        return envVar != null ? envVar : buildName;
+        return getEnvVarOrDefault("aquality.buildName", String.class, buildName);
     }
 
     public String getEnvironment() {
-        String envVar = getEnvVar("aquality.environment");
-        return envVar != null ? envVar : environment;
+        return getEnvVarOrDefault("aquality.environment", String.class, environment);
     }
 
     public String getCiBuild() {
-        String envVar = getEnvVar("aquality.ciBuild");
-        return envVar != null ? envVar : ciBuild;
+        return getEnvVarOrDefault("aquality.ciBuild", String.class, ciBuild);
     }
 
     public boolean isDebug() {
-        String envVar = getEnvVar("aquality.debug");
-        return envVar != null ? Boolean.parseBoolean(envVar) : debug;
+        return getEnvVarOrDefault("aquality.debug", Boolean.class, debug);
     }
 
-    private String getEnvVar(final String varName) {
-        return System.getProperty(varName);
+    @SuppressWarnings("unchecked")
+    private <T> T getEnvVarOrDefault(final String varName, Class<T> tClass, T defaultValue) {
+        final String envVar = System.getProperty(varName);
+        if (envVar == null) {
+            return defaultValue;
+        }
+
+        T resultValue = null;
+        if (tClass.equals(Boolean.class)) {
+            resultValue = (T) Boolean.valueOf(envVar);
+        }
+        return resultValue;
     }
 }
