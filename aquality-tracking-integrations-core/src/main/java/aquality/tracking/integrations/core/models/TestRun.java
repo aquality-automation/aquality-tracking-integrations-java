@@ -5,7 +5,6 @@ import lombok.Data;
 
 @Data
 public class TestRun {
-    @JsonProperty("id")
     private Integer id;
     @JsonProperty("build_name")
     private String buildName;
@@ -17,7 +16,6 @@ public class TestRun {
     private Integer projectId;
     @JsonProperty("finish_time")
     private String finishTime;
-    @JsonProperty("debug")
     private Integer debug;
     @JsonProperty("label_id")
     private Integer labelId;
@@ -27,6 +25,5 @@ public class TestRun {
     private String executionEnvironment;
     @JsonProperty("milestone_id")
     private Integer milestoneId;
-    @JsonProperty("author")
     private String author;
 }
