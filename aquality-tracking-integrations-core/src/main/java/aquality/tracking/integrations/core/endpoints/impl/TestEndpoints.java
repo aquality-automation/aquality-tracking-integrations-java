@@ -23,7 +23,19 @@ public class TestEndpoints extends AqualityTrackingEndpoints implements ITestEnd
         super(configuration, httpClient);
     }
 
-    public List<Test> findTest(final String name) {
+    public Test createOrUpdateTest(final String name, final List<Suite> suites) {
+        List<Test> foundTests = findTest(name);
+        if (foundTests.isEmpty()) {
+            return createOrUpdateTest(null, name, suites);
+        } else {
+            Test foundTest = foundTests.get(0);
+            List<Suite> testSuites = foundTest.getSuites();
+            testSuites.addAll(suites);
+            return createOrUpdateTest(foundTest.getId(), foundTest.getName(), testSuites);
+        }
+    }
+
+    private List<Test> findTest(final String name) {
         Map<String, String> queryParams = new HashMap<String, String>() {{
             put("name", name);
             put("project_id", String.valueOf(getConfiguration().getProjectId()));
@@ -32,14 +44,6 @@ public class TestEndpoints extends AqualityTrackingEndpoints implements ITestEnd
         URI uri = buildURI(TEST_ENDPOINT, queryParams);
         String response = getHttpClient().sendGET(uri, getHeaders());
         return JsonMapper.mapStringContent(response, new TypeReference<List<Test>>() {});
-    }
-
-    public Test createTest(final String name, final List<Suite> suites) {
-        return createOrUpdateTest(null, name, suites);
-    }
-
-    public Test updateTest(int id, final String name, final List<Suite> suites) {
-        return createOrUpdateTest(id, name, suites);
     }
 
     private Test createOrUpdateTest(final Integer id, final String name, final List<Suite> suites) {
