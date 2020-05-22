@@ -44,10 +44,9 @@ class TestCaseNameParser {
                 .findFirst()
                 .orElse(-1);
 
-        String scenarioOutlineName = "";
-        if (tableRowIndex != -1) {
-            scenarioOutlineName = format("%s: %d", scenarioName, tableRowIndex);
-        }
-        return scenarioOutlineName;
+        final String exampleLineName = tableRowIndex == -1
+                ? "EXAMPLE_LINE_NOT_FOUND"
+                : String.valueOf(tableRowIndex);
+        return format("%s: %s", scenarioName, exampleLineName);
     }
 }
