@@ -18,7 +18,7 @@ import java.util.List;
 
 import static java.lang.String.format;
 
-public class AqualityHttpClient {
+public class AqualityHttpClient implements IHttpClient {
 
     public String sendGET(final URI uri, final List<Header> headers) {
         HttpGet request = new HttpGet(uri);

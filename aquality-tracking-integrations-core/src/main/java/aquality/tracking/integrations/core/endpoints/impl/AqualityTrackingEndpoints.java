@@ -1,8 +1,9 @@
-package aquality.tracking.integrations.core.endpoints;
+package aquality.tracking.integrations.core.endpoints.impl;
 
 import aquality.tracking.integrations.core.AqualityUncheckedException;
-import aquality.tracking.integrations.core.AqualityHttpClient;
 import aquality.tracking.integrations.core.Configuration;
+import aquality.tracking.integrations.core.IHttpClient;
+import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
@@ -23,16 +24,14 @@ import static java.lang.String.format;
 
 public abstract class AqualityTrackingEndpoints {
 
-    protected static final Configuration CONFIG = Configuration.getInstance();
+    @Getter
+    private final Configuration configuration;
+    @Getter
+    private final IHttpClient httpClient;
 
-    private final AqualityHttpClient httpClient;
-
-    protected AqualityTrackingEndpoints() {
-        httpClient = new AqualityHttpClient();
-    }
-
-    protected AqualityHttpClient getHttpClient() {
-        return httpClient;
+    protected AqualityTrackingEndpoints(Configuration configuration, IHttpClient httpClient) {
+        this.configuration = configuration;
+        this.httpClient = httpClient;
     }
 
     protected List<Header> getHeaders() {
@@ -43,7 +42,7 @@ public abstract class AqualityTrackingEndpoints {
     }
 
     private Header getBasicAuthHeader() {
-        final String auth = format("project:%d:%s", CONFIG.getProjectId(), CONFIG.getToken());
+        final String auth = format("project:%d:%s", configuration.getProjectId(), configuration.getToken());
         byte[] encodedAuth = Base64.encodeBase64(auth.getBytes());
         String authHeader = "Basic ".concat(new String(encodedAuth));
         return new BasicHeader(HttpHeaders.AUTHORIZATION, authHeader);
@@ -55,7 +54,7 @@ public abstract class AqualityTrackingEndpoints {
 
     protected URI buildURI(final String path, final Map<String, String> queryParams) {
         try {
-            URIBuilder uriBuilder = new URIBuilder(CONFIG.getHost());
+            URIBuilder uriBuilder = new URIBuilder(configuration.getHost());
             uriBuilder.setPath(path);
             queryParams.forEach((param, value) -> uriBuilder.setParameter(param, encodeParameter(value)));
             return uriBuilder.build();
