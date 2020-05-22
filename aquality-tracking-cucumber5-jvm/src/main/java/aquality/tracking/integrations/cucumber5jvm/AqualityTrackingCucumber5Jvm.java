@@ -24,14 +24,14 @@ import java.util.Collections;
 
 public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
 
+    private static final Injector INJECTOR = Guice.createInjector(new ServicesModule());
+
     private static TestRun currentTestRun;
     private static Suite currentSuite;
 
     private final ThreadLocal<Test> currentTest = new InheritableThreadLocal<>();
     private final ThreadLocal<TestResult> currentTestResult = new InheritableThreadLocal<>();
     private final ThreadLocal<Feature> currentFeature = new InheritableThreadLocal<>();
-
-    private static final Injector INJECTOR = Guice.createInjector(new ServicesModule());
 
     private final Configuration configuration;
     private final ISuiteEndpoints suiteEndpoints;
