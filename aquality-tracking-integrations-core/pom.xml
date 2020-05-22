@@ -6,6 +6,7 @@
 
     <artifactId>aquality-tracking-integrations-core</artifactId>
     <version>0.1.0</version>
+    <packaging>pom</packaging>
 
     <parent>
         <artifactId>aquality-tracking-integrations</artifactId>
