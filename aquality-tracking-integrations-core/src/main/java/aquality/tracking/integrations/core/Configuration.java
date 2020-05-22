@@ -17,32 +17,32 @@ public class Configuration {
     private int debug = 0;
 
     public boolean isEnabled() {
-        String envVar = getEnvVar("isAqualityTrackingEnabled");
+        String envVar = getEnvVar("aquality.isEnabled");
         return envVar != null ? Boolean.parseBoolean(envVar) : enabled;
     }
 
     public String getSuiteName() {
-        String envVar = getEnvVar("suiteName");
+        String envVar = getEnvVar("aquality.suiteName");
         return envVar != null ? envVar : suiteName;
     }
 
     public String getBuildName() {
-        String envVar = getEnvVar("buildName");
+        String envVar = getEnvVar("aquality.buildName");
         return envVar != null ? envVar : buildName;
     }
 
     public String getEnvironment() {
-        String envVar = getEnvVar("environment");
+        String envVar = getEnvVar("aquality.environment");
         return envVar != null ? envVar : environment;
     }
 
     public String getCiBuild() {
-        String envVar = getEnvVar("ciBuild");
+        String envVar = getEnvVar("aquality.ciBuild");
         return envVar != null ? envVar : ciBuild;
     }
 
     public int getDebug() {
-        String envVar = getEnvVar("debug");
+        String envVar = getEnvVar("aquality.debug");
         return envVar != null ? Integer.parseInt(envVar) : debug;
     }
 
