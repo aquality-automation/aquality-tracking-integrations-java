@@ -3,6 +3,7 @@ package aquality.tracking.integrations.core.endpoints.impl;
 import aquality.tracking.integrations.core.AqualityUncheckedException;
 import aquality.tracking.integrations.core.Configuration;
 import aquality.tracking.integrations.core.IHttpClient;
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.Header;
@@ -24,9 +25,9 @@ import static java.lang.String.format;
 
 public abstract class AqualityTrackingEndpoints {
 
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     private final Configuration configuration;
-    @Getter
+    @Getter(AccessLevel.PROTECTED)
     private final IHttpClient httpClient;
 
     protected AqualityTrackingEndpoints(Configuration configuration, IHttpClient httpClient) {
