@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static java.lang.String.format;
+
 class TestCaseNameParser {
 
     private static final String SCENARIO_OUTLINE_KEYWORD = "Scenario Outline";
@@ -26,7 +28,7 @@ class TestCaseNameParser {
         if (testCase.getKeyword().equals(SCENARIO_OUTLINE_KEYWORD)) {
             scenarioName = getScenarioOutlineName(scenarioName);
         }
-        return feature.getName().concat(scenarioName);
+        return format("%s: %s", feature.getName(), scenarioName);
     }
 
     private String getScenarioOutlineName(final String scenarioName) {
@@ -44,7 +46,7 @@ class TestCaseNameParser {
 
         String scenarioOutlineName = "";
         if (tableRowIndex != -1) {
-            scenarioOutlineName = scenarioName.concat(String.valueOf(tableRowIndex));
+            scenarioOutlineName = format("%s: %d", scenarioName, tableRowIndex);
         }
         return scenarioOutlineName;
     }
