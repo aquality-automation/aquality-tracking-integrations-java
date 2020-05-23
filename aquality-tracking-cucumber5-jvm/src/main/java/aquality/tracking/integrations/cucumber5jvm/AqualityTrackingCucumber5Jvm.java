@@ -12,11 +12,6 @@ import aquality.tracking.integrations.core.models.TestResult;
 import aquality.tracking.integrations.core.models.TestRun;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import io.cucumber.core.internal.gherkin.AstBuilder;
-import io.cucumber.core.internal.gherkin.Parser;
-import io.cucumber.core.internal.gherkin.TokenMatcher;
-import io.cucumber.core.internal.gherkin.ast.Feature;
-import io.cucumber.core.internal.gherkin.ast.GherkinDocument;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 
@@ -31,7 +26,6 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
 
     private final ThreadLocal<Test> currentTest = new InheritableThreadLocal<>();
     private final ThreadLocal<TestResult> currentTestResult = new InheritableThreadLocal<>();
-    private final ThreadLocal<Feature> currentFeature = new InheritableThreadLocal<>();
 
     private final Configuration configuration;
     private final ISuiteEndpoints suiteEndpoints;
@@ -50,21 +44,12 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
     @Override
     public void setEventPublisher(final EventPublisher eventPublisher) {
         if (configuration.isEnabled()) {
-            eventPublisher.registerHandlerFor(TestSourceRead.class, this::handleTestSourceReadEvent);
-
             eventPublisher.registerHandlerFor(TestRunStarted.class, this::handleTestRunStartedEvent);
             eventPublisher.registerHandlerFor(TestRunFinished.class, this::handleTestRunFinishedEvent);
 
             eventPublisher.registerHandlerFor(TestCaseStarted.class, this::handleTestCaseStartedEvent);
             eventPublisher.registerHandlerFor(TestCaseFinished.class, this::handleTestCaseFinishedEvent);
         }
-    }
-
-    private void handleTestSourceReadEvent(final TestSourceRead event) {
-        Parser<GherkinDocument> parser = new Parser<>(new AstBuilder());
-        TokenMatcher matcher = new TokenMatcher();
-        GherkinDocument gherkinDocument = parser.parse(event.getSource(), matcher);
-        currentFeature.set(gherkinDocument.getFeature());
     }
 
     private void handleTestRunStartedEvent(final TestRunStarted event) {
@@ -79,7 +64,7 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
     }
 
     private void handleTestCaseStartedEvent(final TestCaseStarted event) {
-        String testName = new TestCaseNameParser(currentFeature.get(), event.getTestCase()).getScenarioName();
+        String testName = new TestCaseNameParser(event.getTestCase()).getScenarioName();
         Test test = testEndpoints.createOrUpdateTest(testName, Collections.singletonList(currentSuite));
         currentTest.set(test);
         TestResult testResult = testResultEndpoints.startTestResult(currentTestRun.getId(), currentTest.get().getId());
@@ -91,5 +76,7 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
         TestCaseResultParser.TestCaseResult testCaseResult = testCaseResultParser.parse();
         testResultEndpoints.finishTestResult(currentTestResult.get().getId(),
                 testCaseResult.getFinalResultId(), testCaseResult.getFailReason());
+        currentTest.remove();
+        currentTestResult.remove();
     }
 }
