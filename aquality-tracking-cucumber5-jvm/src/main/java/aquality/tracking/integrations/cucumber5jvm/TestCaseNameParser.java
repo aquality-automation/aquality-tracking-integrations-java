@@ -19,6 +19,7 @@ import static java.lang.String.format;
 class TestCaseNameParser {
 
     private static final String SCENARIO_OUTLINE_KEYWORD = "Scenario Outline";
+    private static final String SCENARIO_TEMPLATE_KEYWORD = "Scenario Template";
 
     private final TestCase testCase;
 
@@ -29,7 +30,8 @@ class TestCaseNameParser {
     public String getScenarioName() {
         Feature currentFeature = getCurrentFeature();
         String scenarioName = testCase.getName();
-        if (testCase.getKeyword().equals(SCENARIO_OUTLINE_KEYWORD)) {
+        String scenarioKeyword = testCase.getKeyword();
+        if (scenarioKeyword.equals(SCENARIO_OUTLINE_KEYWORD) || scenarioKeyword.equals(SCENARIO_TEMPLATE_KEYWORD)) {
             scenarioName = getScenarioOutlineName(currentFeature, scenarioName);
         }
         return format("%s: %s", currentFeature.getName(), scenarioName);
