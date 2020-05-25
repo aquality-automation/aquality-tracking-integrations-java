@@ -6,12 +6,17 @@
 
     <artifactId>aquality-tracking-cucumber5-jvm</artifactId>
     <version>0.1.0</version>
+    <packaging>jar</packaging>
 
     <parent>
         <artifactId>aquality-tracking-integrations</artifactId>
         <groupId>com.github.aquality-automation</groupId>
         <version>0.1.0</version>
     </parent>
+
+    <name>Aquality Tracking Cucumber 5 JVM</name>
+    <description>Aquality Tracking integration for Cucumber 5 JVM.</description>
+    <url>https://github.com/aquality-automation/aquality-tracking-integrations-java</url>
 
     <dependencies>
         <dependency>
@@ -24,6 +29,12 @@
             <groupId>com.github.aquality-automation</groupId>
             <artifactId>aquality-tracking-integrations-core</artifactId>
             <version>0.1.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.10</version>
         </dependency>
     </dependencies>
 </project>

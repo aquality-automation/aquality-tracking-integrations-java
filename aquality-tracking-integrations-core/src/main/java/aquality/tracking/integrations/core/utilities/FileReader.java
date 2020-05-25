@@ -6,6 +6,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 import static java.lang.String.format;
@@ -27,6 +30,14 @@ public class FileReader {
             }
         } catch (IOException e) {
             throw new AqualityUncheckedException(format("Reading of resource file %s was failed", filename), e);
+        }
+    }
+
+    public static String getFileSource(final URI uri) {
+        try {
+            return Files.lines(Paths.get(uri)).collect(Collectors.joining(System.lineSeparator()));
+        } catch (IOException e) {
+            throw new AqualityUncheckedException(format("File %s not found.", uri), e);
         }
     }
 }

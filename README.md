@@ -9,7 +9,7 @@ The repository contains adaptors for JVM-based test frameworks.
 3. Run tests with the following parameters:
 
 ```bash
-mvn clean test -Daquality.isEnabled={true/false} -Daquality.suiteName={test_suite_name} -Daquality.buildName={build_name} -Daquality.environment={execution_env} -Daquality.ciBuild={link_to_ci_build} -Daquality.debug={true/false}
+mvn clean test -Daquality.enabled={true/false} -Daquality.suiteName={test_suite_name} -Daquality.buildName={build_name} -Daquality.environment={execution_env} -Daquality.ciBuild={link_to_ci_build} -Daquality.debug={true/false}
 ```  
 
 Mandatory parameters: `aquality.suiteName`, `aquality.buildName`.
