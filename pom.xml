@@ -7,7 +7,7 @@
     <groupId>com.github.aquality-automation</groupId>
     <artifactId>aquality-tracking-integrations</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.1</version>
+    <version>0.1.2</version>
 
     <name>Aquality Tracking integrations Libraries</name>
     <description>Aquality Tracking integration libraries for JVM-based test frameworks.</description>
