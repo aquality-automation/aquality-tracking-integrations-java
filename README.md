@@ -1,6 +1,7 @@
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=aquality-automation_aquality-tracking-integrations-java&metric=alert_status)](https://sonarcloud.io/dashboard?id=aquality-automation_aquality-tracking-integrations-java)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.aquality-automation/aquality-tracking-integrations-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.aquality-automation/aquality-tracking-integrations-core)
 
-# Aquality Tracking Java Integrations [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.aquality-automation/aquality-tracking-integrations-core/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.aquality-automation/aquality-tracking-integrations-core)
+# Aquality Tracking Java Integrations 
 
 The repository contains adaptors for JVM-based test frameworks.
 
