@@ -1,4 +1,6 @@
-# Aquality Tracking Java Integrations
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=aquality-automation_aquality-tracking-integrations-java&metric=alert_status)](https://sonarcloud.io/dashboard?id=https://sonarcloud.io/dashboard?id=aquality-automation_aquality-tracking-integrations-java)
+
+# Aquality Tracking Java Integrations [![Maven Central](https://img.shields.io/maven-central/v/com.github.aquality-automation/aquality-tracking-integrations-core.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.aquality-automation%22%20AND%20a:%22aquality-tracking-integrations-core%22)
 
 The repository contains adaptors for JVM-based test frameworks.
 
@@ -14,7 +16,7 @@ mvn clean test -Daquality.enabled={true/false} -Daquality.suiteName={test_suite_
 
 Mandatory parameters: `aquality.suiteName`, `aquality.buildName`.
 
-## Cucumber 5
+## Cucumber 5 [![Maven Central](https://img.shields.io/maven-central/v/com.github.aquality-automation/aquality-tracking-cucumber5-jvm.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.github.aquality-automation%22%20AND%20a:%22aquality-tracking-cucumber5-jvm%22)
 
 To use this adaptor with Cucumber 5 you have to add the following dependency:
 
