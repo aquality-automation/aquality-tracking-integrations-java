@@ -38,10 +38,9 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
     }
 
     public TestRun finishTestRun(int testRunId) {
-        Map<String, String> queryParams = new HashMap<String, String>() {{
-            put("project_id", String.valueOf(getConfiguration().getProjectId()));
-            put("id", String.valueOf(testRunId));
-        }};
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("project_id", String.valueOf(getConfiguration().getProjectId()));
+        queryParams.put("id", String.valueOf(testRunId));
 
         URI uri = buildURI(FINISH_TESTRUN_ENDPOINT, queryParams);
         String response = getHttpClient().sendGET(uri, getHeaders());
