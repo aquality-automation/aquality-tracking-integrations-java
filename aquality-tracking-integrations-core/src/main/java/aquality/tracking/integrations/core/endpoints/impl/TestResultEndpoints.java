@@ -22,11 +22,10 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints implements IT
     }
 
     public TestResult startTestResult(int testRunId, int testId) {
-        Map<String, String> queryParams = new HashMap<String, String>() {{
-            put("project_id", String.valueOf(getConfiguration().getProjectId()));
-            put("test_run_id", String.valueOf(testRunId));
-            put("test_id", String.valueOf(testId));
-        }};
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("project_id", String.valueOf(getConfiguration().getProjectId()));
+        queryParams.put("test_run_id", String.valueOf(testRunId));
+        queryParams.put("test_id", String.valueOf(testId));
 
         URI uri = buildURI(START_TEST_RESULT_ENDPOINT, queryParams);
         String response = getHttpClient().sendGET(uri, getHeaders());
