@@ -15,6 +15,8 @@ public class EnvironmentReader {
         T resultValue = null;
         if (tClass.equals(Boolean.class)) {
             resultValue = (T) Boolean.valueOf(envVar);
+        } else if (tClass.equals(Integer.class)) {
+            resultValue = (T) Integer.valueOf(envVar);
         }
         return resultValue;
     }

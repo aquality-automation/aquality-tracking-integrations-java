@@ -7,15 +7,23 @@ The repository contains adaptors for JVM-based test frameworks.
 
 ## How to use
 
-1. Add [aqualityTracking.json](./aquality-tracking-integrations-core/src/main/resources/aqualityTracking.json) file with corresponding values to `src/test/resources`.
-2. Define dependencies according to the selected test framework (see below).
-3. Run tests with the following parameters:
+1. Define dependencies according to the selected test framework (see below).
+2. Add [aqualityTracking.json](./aquality-tracking-integrations-core/src/main/resources/aqualityTracking.json) file with corresponding values to `src/test/resources`.
+
+You are able to override these values from CI build using Maven properties:
 
 ```bash
-mvn clean test -Daquality.enabled={true/false} -Daquality.suiteName={test_suite_name} -Daquality.buildName={build_name} -Daquality.environment={execution_env} -Daquality.ciBuild={link_to_ci_build} -Daquality.debug={true/false}
+mvn clean test -Daquality.enabled={true/false} 
+    -Daquality.host={aquality_tracking_address}
+    -Daquality.token={api_token}
+    -Daquality.projectId={project_id}
+    -Daquality.executor={name_of_executor}
+    -Daquality.suiteName={test_suite_name} 
+    -Daquality.buildName={build_name} 
+    -Daquality.environment={execution_env} 
+    -Daquality.ciBuild={link_to_ci_build} 
+    -Daquality.debug={true/false}
 ```  
-
-Mandatory parameters: `aquality.suiteName`, `aquality.buildName`.
 
 ## Cucumber 5 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.aquality-automation/aquality-tracking-cucumber5-jvm/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.aquality-automation/aquality-tracking-cucumber5-jvm)
 
