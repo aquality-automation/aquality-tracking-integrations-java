@@ -5,11 +5,16 @@ import aquality.tracking.integrations.core.IHttpClient;
 import aquality.tracking.integrations.core.endpoints.ITestRunEndpoints;
 import aquality.tracking.integrations.core.models.TestRun;
 import aquality.tracking.integrations.core.utilities.JsonMapper;
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITestRunEndpoints {
 
@@ -33,18 +38,23 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
         testRun.setDebug(debug ? 1 : 0);
 
         URI uri = buildURI(START_TESTRUN_ENDPOINT);
-        String response = getHttpClient().sendPOST(uri, getHeaders(), JsonMapper.getJson(testRun));
+
+        List<Header> headers = getDefaultHeaders()
+                .add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+                .get();
+
+        String response = getHttpClient().sendPOST(uri, headers, JsonMapper.getJson(testRun));
         return JsonMapper.mapStringContent(response, TestRun.class);
     }
 
     public TestRun finishTestRun(int testRunId) {
-        Map<String, String> queryParams = new HashMap<String, String>() {{
-            put("project_id", String.valueOf(getConfiguration().getProjectId()));
-            put("id", String.valueOf(testRunId));
-        }};
+        Map<String, String> queryParams = new HashMap<>();
+        queryParams.put("project_id", String.valueOf(getConfiguration().getProjectId()));
+        queryParams.put("id", String.valueOf(testRunId));
 
         URI uri = buildURI(FINISH_TESTRUN_ENDPOINT, queryParams);
-        String response = getHttpClient().sendGET(uri, getHeaders());
+
+        String response = getHttpClient().sendGET(uri, getDefaultHeaders().get());
         return JsonMapper.mapStringContent(response, TestRun.class);
     }
 }

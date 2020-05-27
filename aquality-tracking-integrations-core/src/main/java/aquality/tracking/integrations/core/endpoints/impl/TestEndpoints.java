@@ -6,10 +6,14 @@ import aquality.tracking.integrations.core.endpoints.ITestEndpoints;
 import aquality.tracking.integrations.core.models.Suite;
 import aquality.tracking.integrations.core.models.Test;
 import aquality.tracking.integrations.core.utilities.JsonMapper;
+import org.apache.http.Header;
+import org.apache.http.HttpHeaders;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.List;
+
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class TestEndpoints extends AqualityTrackingEndpoints implements ITestEndpoints {
 
@@ -27,7 +31,12 @@ public class TestEndpoints extends AqualityTrackingEndpoints implements ITestEnd
         test.setSuites(suites);
 
         URI uri = buildURI(CREATE_OR_UPDATE_TEST_ENDPOINT);
-        String response = getHttpClient().sendPOST(uri, getHeaders(), JsonMapper.getJson(test));
+
+        List<Header> headers = getDefaultHeaders()
+                .add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+                .get();
+
+        String response = getHttpClient().sendPOST(uri, headers, JsonMapper.getJson(test));
         return JsonMapper.mapStringContent(response, Test.class);
     }
 }

@@ -16,12 +16,11 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static java.lang.String.format;
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public abstract class AqualityTrackingEndpoints {
 
@@ -35,11 +34,9 @@ public abstract class AqualityTrackingEndpoints {
         this.httpClient = httpClient;
     }
 
-    protected List<Header> getHeaders() {
-        List<Header> headers = new ArrayList<>();
-        headers.add(new BasicHeader(HttpHeaders.ACCEPT, "application/json"));
-        headers.add(getBasicAuthHeader());
-        return headers;
+    protected Headers getDefaultHeaders() {
+        Headers defaultHeaders = new Headers(getBasicAuthHeader());
+        return defaultHeaders.add(HttpHeaders.ACCEPT, APPLICATION_JSON);
     }
 
     private Header getBasicAuthHeader() {
