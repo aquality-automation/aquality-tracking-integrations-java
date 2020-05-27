@@ -18,11 +18,21 @@
     <description>Aquality Tracking integration core for JVM-based test frameworks.</description>
     <url>https://github.com/aquality-automation/aquality-tracking-integrations-java</url>
 
+    <properties>
+        <httpcomponents.version>4.5.12</httpcomponents.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.12</version>
+            <version>${httpcomponents.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>${httpcomponents.version}</version>
         </dependency>
 
         <dependency>
@@ -35,6 +45,12 @@
             <groupId>com.google.inject</groupId>
             <artifactId>guice</artifactId>
             <version>4.2.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.6</version>
         </dependency>
     </dependencies>
 

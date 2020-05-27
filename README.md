@@ -23,6 +23,7 @@ mvn clean test -Daquality.enabled={true/false}
     -Daquality.environment={execution_env} 
     -Daquality.ciBuild={link_to_ci_build} 
     -Daquality.debug={true/false}
+    -Daquality.attachmentsDirectory={path_to_directory_with_attachments}
 ```  
 
 ## Cucumber 5 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.aquality-automation/aquality-tracking-cucumber5-jvm/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.github.aquality-automation/aquality-tracking-cucumber5-jvm)

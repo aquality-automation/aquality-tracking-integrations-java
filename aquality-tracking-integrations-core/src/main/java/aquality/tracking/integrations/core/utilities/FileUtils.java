@@ -2,10 +2,7 @@ package aquality.tracking.integrations.core.utilities;
 
 import aquality.tracking.integrations.core.AqualityUncheckedException;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -14,13 +11,13 @@ import java.util.stream.Stream;
 
 import static java.lang.String.format;
 
-public class FileReader {
+public class FileUtils {
 
-    private FileReader() {
+    private FileUtils() {
     }
 
     public static String readResourceFile(final String filename) {
-        try (InputStream inputStream = FileReader.class.getClassLoader().getResourceAsStream(filename)) {
+        try (InputStream inputStream = FileUtils.class.getClassLoader().getResourceAsStream(filename)) {
             if (inputStream == null) {
                 throw new AqualityUncheckedException(format("Resource %s not found. Please add it to the resources folder.", filename));
             }
@@ -40,5 +37,15 @@ public class FileReader {
         } catch (IOException e) {
             throw new AqualityUncheckedException(format("File %s not found.", uri), e);
         }
+    }
+
+    public static File writeToFile(final String pathname, final byte[] data) {
+        File file = new File(pathname);
+        try {
+            org.apache.commons.io.FileUtils.writeByteArrayToFile(file, data);
+        } catch (IOException e) {
+            throw new AqualityUncheckedException(format("Failed to write data into %s", pathname), e);
+        }
+        return file;
     }
 }

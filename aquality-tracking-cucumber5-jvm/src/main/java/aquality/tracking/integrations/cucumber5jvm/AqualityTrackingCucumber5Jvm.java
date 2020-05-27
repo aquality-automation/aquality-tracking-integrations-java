@@ -10,12 +10,17 @@ import aquality.tracking.integrations.core.models.Suite;
 import aquality.tracking.integrations.core.models.Test;
 import aquality.tracking.integrations.core.models.TestResult;
 import aquality.tracking.integrations.core.models.TestRun;
+import aquality.tracking.integrations.core.utilities.FileUtils;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 
+import java.io.File;
+import java.nio.file.Paths;
 import java.util.Collections;
+
+import static java.lang.String.format;
 
 public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
 
@@ -24,8 +29,8 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
     private static TestRun currentTestRun;
     private static Suite currentSuite;
 
-    private final ThreadLocal<Test> currentTest = new InheritableThreadLocal<>();
-    private final ThreadLocal<TestResult> currentTestResult = new InheritableThreadLocal<>();
+    private final ThreadLocal<Test> currentTest = new ThreadLocal<>();
+    private final ThreadLocal<TestResult> currentTestResult = new ThreadLocal<>();
 
     private final Configuration configuration;
     private final ISuiteEndpoints suiteEndpoints;
@@ -49,6 +54,8 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
 
             eventPublisher.registerHandlerFor(TestCaseStarted.class, this::handleTestCaseStartedEvent);
             eventPublisher.registerHandlerFor(TestCaseFinished.class, this::handleTestCaseFinishedEvent);
+
+            eventPublisher.registerHandlerFor(EmbedEvent.class, this::handleEmbedEvent);
         }
     }
 
@@ -78,5 +85,12 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
                 testCaseResult.getFinalResultId(), testCaseResult.getFailReason());
         currentTest.remove();
         currentTestResult.remove();
+    }
+
+    private void handleEmbedEvent(final EmbedEvent event) {
+        String filePath = Paths.get(configuration.getAttachmentsDirectory(),
+                format("%s_%s", event.getTestCase().getId(), event.getName())).toString();
+        File attachmentFile = FileUtils.writeToFile(filePath, event.getData());
+        testResultEndpoints.addAttachment(currentTestResult.get().getId(), attachmentFile);
     }
 }

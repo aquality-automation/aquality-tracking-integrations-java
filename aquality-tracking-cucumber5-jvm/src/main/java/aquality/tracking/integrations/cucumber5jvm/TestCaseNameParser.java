@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static aquality.tracking.integrations.core.utilities.FileReader.getFileSource;
+import static aquality.tracking.integrations.core.utilities.FileUtils.getFileSource;
 import static java.lang.String.format;
 
 class TestCaseNameParser {

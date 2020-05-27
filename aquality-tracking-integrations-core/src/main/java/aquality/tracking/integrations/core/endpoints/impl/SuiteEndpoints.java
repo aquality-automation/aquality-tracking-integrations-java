@@ -5,9 +5,12 @@ import aquality.tracking.integrations.core.IHttpClient;
 import aquality.tracking.integrations.core.endpoints.ISuiteEndpoints;
 import aquality.tracking.integrations.core.models.Suite;
 import aquality.tracking.integrations.core.utilities.JsonMapper;
+import org.apache.http.HttpHeaders;
 
 import javax.inject.Inject;
 import java.net.URI;
+
+import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class SuiteEndpoints extends AqualityTrackingEndpoints implements ISuiteEndpoints {
 
@@ -24,7 +27,11 @@ public class SuiteEndpoints extends AqualityTrackingEndpoints implements ISuiteE
         suite.setName(name);
 
         URI uri = buildURI(CREATE_OR_UPDATE_ENDPOINT);
-        String response = getHttpClient().sendPOST(uri, getHeaders(), JsonMapper.getJson(suite));
+
+        Headers headers = getDefaultHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON);
+
+        String response = getHttpClient().sendPOST(uri, headers.get(), JsonMapper.getJson(suite));
         return JsonMapper.mapStringContent(response, Suite.class);
     }
 }

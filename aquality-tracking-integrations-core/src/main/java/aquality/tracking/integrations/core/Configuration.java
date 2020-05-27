@@ -16,6 +16,7 @@ public class Configuration {
     private String environment;
     private String ciBuild;
     private boolean debug;
+    private String attachmentsDirectory;
 
     public boolean isEnabled() {
         return getValueOrDefault("aquality.enabled", Boolean.class, enabled);
@@ -55,5 +56,9 @@ public class Configuration {
 
     public boolean isDebug() {
         return getValueOrDefault("aquality.debug", Boolean.class, debug);
+    }
+
+    public String getAttachmentsDirectory() {
+        return getValueOrDefault("aquality.attachmentsDirectory", String.class, attachmentsDirectory);
     }
 }
