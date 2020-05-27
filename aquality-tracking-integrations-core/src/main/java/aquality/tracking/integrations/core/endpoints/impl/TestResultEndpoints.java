@@ -5,6 +5,7 @@ import aquality.tracking.integrations.core.IHttpClient;
 import aquality.tracking.integrations.core.endpoints.ITestResultEndpoints;
 import aquality.tracking.integrations.core.models.TestResult;
 import aquality.tracking.integrations.core.utilities.JsonMapper;
+import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpHeaders;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -13,6 +14,7 @@ import javax.inject.Inject;
 import java.io.File;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
@@ -50,10 +52,11 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints implements IT
 
         URI uri = buildURI(FINISH_TEST_RESULT_ENDPOINT);
 
-        Headers headers = getDefaultHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON);
+        List<Header> headers = getDefaultHeaders()
+                .add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+                .get();
 
-        String response = getHttpClient().sendPOST(uri, headers.get(), JsonMapper.getJson(testResult));
+        String response = getHttpClient().sendPOST(uri, headers, JsonMapper.getJson(testResult));
         return JsonMapper.mapStringContent(response, TestResult.class);
     }
 
@@ -64,13 +67,14 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints implements IT
 
         URI uri = buildURI(ADD_ATTACHMENT_ENDPOINT, queryParams);
 
-        Headers headers = getDefaultHeaders();
-        headers.add(HttpHeaders.ACCEPT, WILDCARD);
+        List<Header> headers = getDefaultHeaders()
+                .add(HttpHeaders.ACCEPT, WILDCARD)
+                .get();
 
         HttpEntity postData = MultipartEntityBuilder.create()
                 .addBinaryBody("files", file)
                 .build();
 
-        getHttpClient().sendPOST(uri, headers.get(), postData);
+        getHttpClient().sendPOST(uri, headers, postData);
     }
 }

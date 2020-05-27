@@ -11,11 +11,11 @@ import java.util.stream.Collectors;
 
 class Headers {
 
-    private final Map<String, String> headers;
+    private final Map<String, String> headersCollection;
 
     Headers(Header defaultHeader) {
-        headers = new HashMap<>();
-        headers.put(defaultHeader.getName(), defaultHeader.getValue());
+        headersCollection = new HashMap<>();
+        headersCollection.put(defaultHeader.getName(), defaultHeader.getValue());
     }
 
     Headers add(final String name, final ContentType value) {
@@ -23,13 +23,13 @@ class Headers {
     }
 
     Headers add(final String name, final String value) {
-        headers.put(name, value);
+        headersCollection.put(name, value);
         return this;
     }
 
     List<Header> get() {
-        return headers.keySet().stream()
-                .map(key -> new BasicHeader(key, headers.get(key)))
+        return headersCollection.keySet().stream()
+                .map(key -> new BasicHeader(key, headersCollection.get(key)))
                 .collect(Collectors.toList());
     }
 }

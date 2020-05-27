@@ -36,8 +36,7 @@ public abstract class AqualityTrackingEndpoints {
 
     protected Headers getDefaultHeaders() {
         Headers defaultHeaders = new Headers(getBasicAuthHeader());
-        defaultHeaders.add(HttpHeaders.ACCEPT, APPLICATION_JSON);
-        return defaultHeaders;
+        return defaultHeaders.add(HttpHeaders.ACCEPT, APPLICATION_JSON);
     }
 
     private Header getBasicAuthHeader() {

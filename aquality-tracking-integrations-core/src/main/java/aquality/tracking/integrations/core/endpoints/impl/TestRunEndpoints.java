@@ -5,11 +5,13 @@ import aquality.tracking.integrations.core.IHttpClient;
 import aquality.tracking.integrations.core.endpoints.ITestRunEndpoints;
 import aquality.tracking.integrations.core.models.TestRun;
 import aquality.tracking.integrations.core.utilities.JsonMapper;
+import org.apache.http.Header;
 import org.apache.http.HttpHeaders;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.apache.http.entity.ContentType.APPLICATION_JSON;
@@ -37,10 +39,11 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
 
         URI uri = buildURI(START_TESTRUN_ENDPOINT);
 
-        Headers headers = getDefaultHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON);
+        List<Header> headers = getDefaultHeaders()
+                .add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
+                .get();
 
-        String response = getHttpClient().sendPOST(uri, headers.get(), JsonMapper.getJson(testRun));
+        String response = getHttpClient().sendPOST(uri, headers, JsonMapper.getJson(testRun));
         return JsonMapper.mapStringContent(response, TestRun.class);
     }
 
