@@ -8,8 +8,6 @@ import aquality.tracking.integrations.core.utilities.JsonMapper;
 
 import javax.inject.Inject;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITestRunEndpoints {
 
@@ -17,7 +15,7 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
     private static final String FINISH_TESTRUN_ENDPOINT = "/api/public/testrun/finish";
 
     @Inject
-    protected TestRunEndpoints(IConfiguration configuration, IHttpClient httpClient) {
+    public TestRunEndpoints(IConfiguration configuration, IHttpClient httpClient) {
         super(configuration, httpClient);
     }
 
@@ -32,18 +30,17 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
         testRun.setCiBuild(ciBuild);
         testRun.setDebug(debug ? 1 : 0);
 
-        URI uri = buildURI(START_TESTRUN_ENDPOINT);
+        URI uri = getUriBuilder(START_TESTRUN_ENDPOINT).build();
 
         String response = getHttpClient().sendPOST(uri, JsonMapper.getJson(testRun));
         return JsonMapper.mapStringContent(response, TestRun.class);
     }
 
     public TestRun finishTestRun(int testRunId) {
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("project_id", String.valueOf(getConfiguration().getProjectId()));
-        queryParams.put("id", String.valueOf(testRunId));
-
-        URI uri = buildURI(FINISH_TESTRUN_ENDPOINT, queryParams);
+        URI uri = getUriBuilder(FINISH_TESTRUN_ENDPOINT)
+                .setParameter("project_id", getConfiguration().getProjectId())
+                .setParameter("id", testRunId)
+                .build();
 
         String response = getHttpClient().sendGET(uri);
         return JsonMapper.mapStringContent(response, TestRun.class);

@@ -11,8 +11,6 @@ import org.apache.http.entity.mime.MultipartEntityBuilder;
 import javax.inject.Inject;
 import java.io.File;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 
 public class TestResultEndpoints extends AqualityTrackingEndpoints implements ITestResultEndpoints {
 
@@ -21,17 +19,16 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints implements IT
     private static final String ADD_ATTACHMENT_ENDPOINT = "/api/public/test/result/attachment";
 
     @Inject
-    protected TestResultEndpoints(IConfiguration configuration, IHttpClient httpClient) {
+    public TestResultEndpoints(IConfiguration configuration, IHttpClient httpClient) {
         super(configuration, httpClient);
     }
 
     public TestResult startTestResult(int testRunId, int testId) {
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("project_id", String.valueOf(getConfiguration().getProjectId()));
-        queryParams.put("test_run_id", String.valueOf(testRunId));
-        queryParams.put("test_id", String.valueOf(testId));
-
-        URI uri = buildURI(START_TEST_RESULT_ENDPOINT, queryParams);
+        URI uri = getUriBuilder(START_TEST_RESULT_ENDPOINT)
+                .setParameter("project_id", getConfiguration().getProjectId())
+                .setParameter("test_run_id", testRunId)
+                .setParameter("test_id", testId)
+                .build();
 
         String response = getHttpClient().sendGET(uri);
         return JsonMapper.mapStringContent(response, TestResult.class);
@@ -44,18 +41,17 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints implements IT
         testResult.setFinalResultId(finalResultId);
         testResult.setFailReason(failReason);
 
-        URI uri = buildURI(FINISH_TEST_RESULT_ENDPOINT);
+        URI uri = getUriBuilder(FINISH_TEST_RESULT_ENDPOINT).build();
 
         String response = getHttpClient().sendPOST(uri, JsonMapper.getJson(testResult));
         return JsonMapper.mapStringContent(response, TestResult.class);
     }
 
     public void addAttachment(int testResultId, final File file) {
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("project_id", String.valueOf(getConfiguration().getProjectId()));
-        queryParams.put("test_result_id", String.valueOf(testResultId));
-
-        URI uri = buildURI(ADD_ATTACHMENT_ENDPOINT, queryParams);
+        URI uri = getUriBuilder(ADD_ATTACHMENT_ENDPOINT)
+                .setParameter("project_id", getConfiguration().getProjectId())
+                .setParameter("test_result_id", testResultId)
+                .build();
 
         HttpEntity postData = MultipartEntityBuilder.create()
                 .addBinaryBody("files", file)

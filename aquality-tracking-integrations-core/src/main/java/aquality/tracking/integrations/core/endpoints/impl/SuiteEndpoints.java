@@ -14,7 +14,7 @@ public class SuiteEndpoints extends AqualityTrackingEndpoints implements ISuiteE
     private static final String CREATE_OR_UPDATE_ENDPOINT = "/api/public/suite/create-or-update";
 
     @Inject
-    protected SuiteEndpoints(IConfiguration configuration, IHttpClient httpClient) {
+    public SuiteEndpoints(IConfiguration configuration, IHttpClient httpClient) {
         super(configuration, httpClient);
     }
 
@@ -23,7 +23,7 @@ public class SuiteEndpoints extends AqualityTrackingEndpoints implements ISuiteE
         suite.setProjectId(getConfiguration().getProjectId());
         suite.setName(name);
 
-        URI uri = buildURI(CREATE_OR_UPDATE_ENDPOINT);
+        URI uri = getUriBuilder(CREATE_OR_UPDATE_ENDPOINT).build();
 
         String response = getHttpClient().sendPOST(uri, JsonMapper.getJson(suite));
         return JsonMapper.mapStringContent(response, Suite.class);

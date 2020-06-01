@@ -16,7 +16,7 @@ public class TestEndpoints extends AqualityTrackingEndpoints implements ITestEnd
     private static final String CREATE_OR_UPDATE_TEST_ENDPOINT = "/api/public/test/create-or-update";
 
     @Inject
-    protected TestEndpoints(IConfiguration configuration, IHttpClient httpClient) {
+    public TestEndpoints(IConfiguration configuration, IHttpClient httpClient) {
         super(configuration, httpClient);
     }
 
@@ -26,7 +26,7 @@ public class TestEndpoints extends AqualityTrackingEndpoints implements ITestEnd
         test.setName(name);
         test.setSuites(suites);
 
-        URI uri = buildURI(CREATE_OR_UPDATE_TEST_ENDPOINT);
+        URI uri = getUriBuilder(CREATE_OR_UPDATE_TEST_ENDPOINT).build();
 
         String response = getHttpClient().sendPOST(uri, JsonMapper.getJson(test));
         return JsonMapper.mapStringContent(response, Test.class);
