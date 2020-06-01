@@ -19,8 +19,11 @@ public class UriBuilder {
     private final Map<String, String> queryParameters;
 
     public UriBuilder(String host) {
-        builder = new URIBuilder();
-        builder.setHost(host);
+        try {
+            builder = new URIBuilder(host);
+        } catch (URISyntaxException e) {
+            throw new AqualityUncheckedException(format("Exception during URI builder initializing with %s", host), e);
+        }
         queryParameters = new HashMap<>();
     }
 
