@@ -39,3 +39,9 @@ To use this adaptor with Cucumber 5 you have to add the following dependency:
 ```
 
 Also you have to add plugin `aquality.tracking.integrations.cucumber5jvm.AqualityTrackingCucumber5Jvm` to the Cucumber Test Runner. 
+
+#### How to increase version for all modules
+
+```bash
+mvn versions:set -DnewVersion={new_version}
+``` 
