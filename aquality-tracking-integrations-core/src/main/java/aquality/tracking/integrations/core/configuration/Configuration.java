@@ -1,11 +1,11 @@
-package aquality.tracking.integrations.core;
+package aquality.tracking.integrations.core.configuration;
 
-import lombok.Data;
+import lombok.Setter;
 
 import static aquality.tracking.integrations.core.utilities.EnvironmentReader.getValueOrDefault;
 
-@Data
-public class Configuration {
+@Setter
+public class Configuration implements IConfiguration {
     private boolean enabled;
     private String host;
     private String token;

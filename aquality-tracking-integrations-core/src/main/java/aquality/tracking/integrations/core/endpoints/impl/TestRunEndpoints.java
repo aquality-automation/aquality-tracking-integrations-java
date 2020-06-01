@@ -1,20 +1,12 @@
 package aquality.tracking.integrations.core.endpoints.impl;
 
-import aquality.tracking.integrations.core.Configuration;
-import aquality.tracking.integrations.core.IHttpClient;
+import aquality.tracking.integrations.core.configuration.IConfiguration;
 import aquality.tracking.integrations.core.endpoints.ITestRunEndpoints;
+import aquality.tracking.integrations.core.http.IHttpClient;
 import aquality.tracking.integrations.core.models.TestRun;
-import aquality.tracking.integrations.core.utilities.JsonMapper;
-import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
 
 import javax.inject.Inject;
 import java.net.URI;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITestRunEndpoints {
 
@@ -22,7 +14,7 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
     private static final String FINISH_TESTRUN_ENDPOINT = "/api/public/testrun/finish";
 
     @Inject
-    protected TestRunEndpoints(Configuration configuration, IHttpClient httpClient) {
+    public TestRunEndpoints(IConfiguration configuration, IHttpClient httpClient) {
         super(configuration, httpClient);
     }
 
@@ -37,24 +29,17 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
         testRun.setCiBuild(ciBuild);
         testRun.setDebug(debug ? 1 : 0);
 
-        URI uri = buildURI(START_TESTRUN_ENDPOINT);
+        URI uri = getUriBuilder(START_TESTRUN_ENDPOINT).build();
 
-        List<Header> headers = getDefaultHeaders()
-                .add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
-                .get();
-
-        String response = getHttpClient().sendPOST(uri, headers, JsonMapper.getJson(testRun));
-        return JsonMapper.mapStringContent(response, TestRun.class);
+        return getHttpClient().sendPOST(uri, testRun);
     }
 
     public TestRun finishTestRun(int testRunId) {
-        Map<String, String> queryParams = new HashMap<>();
-        queryParams.put("project_id", String.valueOf(getConfiguration().getProjectId()));
-        queryParams.put("id", String.valueOf(testRunId));
+        URI uri = getUriBuilder(FINISH_TESTRUN_ENDPOINT)
+                .setParameter("project_id", getConfiguration().getProjectId())
+                .setParameter("id", testRunId)
+                .build();
 
-        URI uri = buildURI(FINISH_TESTRUN_ENDPOINT, queryParams);
-
-        String response = getHttpClient().sendGET(uri, getDefaultHeaders().get());
-        return JsonMapper.mapStringContent(response, TestRun.class);
+        return getHttpClient().sendGET(uri, TestRun.class);
     }
 }
