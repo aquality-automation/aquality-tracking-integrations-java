@@ -12,11 +12,13 @@ public class EnvironmentReader {
             return defaultValue;
         }
 
-        T resultValue = null;
+        T resultValue;
         if (tClass.equals(Boolean.class)) {
             resultValue = (T) Boolean.valueOf(envVar);
         } else if (tClass.equals(Integer.class)) {
             resultValue = (T) Integer.valueOf(envVar);
+        } else {
+            resultValue = (T) envVar;
         }
         return resultValue;
     }
