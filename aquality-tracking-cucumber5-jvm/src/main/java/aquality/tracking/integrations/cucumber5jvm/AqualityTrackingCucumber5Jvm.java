@@ -1,6 +1,6 @@
 package aquality.tracking.integrations.cucumber5jvm;
 
-import aquality.tracking.integrations.core.Configuration;
+import aquality.tracking.integrations.core.configuration.Configuration;
 import aquality.tracking.integrations.core.ServicesModule;
 import aquality.tracking.integrations.core.endpoints.ISuiteEndpoints;
 import aquality.tracking.integrations.core.endpoints.ITestEndpoints;

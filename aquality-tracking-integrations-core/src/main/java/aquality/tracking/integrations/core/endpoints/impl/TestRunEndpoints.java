@@ -1,20 +1,15 @@
 package aquality.tracking.integrations.core.endpoints.impl;
 
-import aquality.tracking.integrations.core.Configuration;
-import aquality.tracking.integrations.core.IHttpClient;
+import aquality.tracking.integrations.core.configuration.IConfiguration;
 import aquality.tracking.integrations.core.endpoints.ITestRunEndpoints;
+import aquality.tracking.integrations.core.http.IHttpClient;
 import aquality.tracking.integrations.core.models.TestRun;
 import aquality.tracking.integrations.core.utilities.JsonMapper;
-import org.apache.http.Header;
-import org.apache.http.HttpHeaders;
 
 import javax.inject.Inject;
 import java.net.URI;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
-import static org.apache.http.entity.ContentType.APPLICATION_JSON;
 
 public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITestRunEndpoints {
 
@@ -22,7 +17,7 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
     private static final String FINISH_TESTRUN_ENDPOINT = "/api/public/testrun/finish";
 
     @Inject
-    protected TestRunEndpoints(Configuration configuration, IHttpClient httpClient) {
+    protected TestRunEndpoints(IConfiguration configuration, IHttpClient httpClient) {
         super(configuration, httpClient);
     }
 
@@ -39,11 +34,7 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
 
         URI uri = buildURI(START_TESTRUN_ENDPOINT);
 
-        List<Header> headers = getDefaultHeaders()
-                .add(HttpHeaders.CONTENT_TYPE, APPLICATION_JSON)
-                .get();
-
-        String response = getHttpClient().sendPOST(uri, headers, JsonMapper.getJson(testRun));
+        String response = getHttpClient().sendPOST(uri, JsonMapper.getJson(testRun));
         return JsonMapper.mapStringContent(response, TestRun.class);
     }
 
@@ -54,7 +45,7 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
 
         URI uri = buildURI(FINISH_TESTRUN_ENDPOINT, queryParams);
 
-        String response = getHttpClient().sendGET(uri, getDefaultHeaders().get());
+        String response = getHttpClient().sendGET(uri);
         return JsonMapper.mapStringContent(response, TestRun.class);
     }
 }
