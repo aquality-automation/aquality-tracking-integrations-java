@@ -4,7 +4,6 @@ import aquality.tracking.integrations.core.configuration.IConfiguration;
 import aquality.tracking.integrations.core.endpoints.ISuiteEndpoints;
 import aquality.tracking.integrations.core.http.IHttpClient;
 import aquality.tracking.integrations.core.models.Suite;
-import aquality.tracking.integrations.core.utilities.JsonMapper;
 
 import javax.inject.Inject;
 import java.net.URI;
@@ -25,7 +24,6 @@ public class SuiteEndpoints extends AqualityTrackingEndpoints implements ISuiteE
 
         URI uri = getUriBuilder(CREATE_OR_UPDATE_ENDPOINT).build();
 
-        String response = getHttpClient().sendPOST(uri, JsonMapper.getJson(suite));
-        return JsonMapper.mapStringContent(response, Suite.class);
+        return getHttpClient().sendPOST(uri, suite);
     }
 }

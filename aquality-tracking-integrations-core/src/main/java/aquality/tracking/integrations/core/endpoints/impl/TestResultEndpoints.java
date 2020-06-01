@@ -4,7 +4,6 @@ import aquality.tracking.integrations.core.configuration.IConfiguration;
 import aquality.tracking.integrations.core.endpoints.ITestResultEndpoints;
 import aquality.tracking.integrations.core.http.IHttpClient;
 import aquality.tracking.integrations.core.models.TestResult;
-import aquality.tracking.integrations.core.utilities.JsonMapper;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 
@@ -30,8 +29,7 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints implements IT
                 .setParameter("test_id", testId)
                 .build();
 
-        String response = getHttpClient().sendGET(uri);
-        return JsonMapper.mapStringContent(response, TestResult.class);
+        return getHttpClient().sendGET(uri, TestResult.class);
     }
 
     public TestResult finishTestResult(int testResultId, int finalResultId, final String failReason) {
@@ -43,8 +41,7 @@ public class TestResultEndpoints extends AqualityTrackingEndpoints implements IT
 
         URI uri = getUriBuilder(FINISH_TEST_RESULT_ENDPOINT).build();
 
-        String response = getHttpClient().sendPOST(uri, JsonMapper.getJson(testResult));
-        return JsonMapper.mapStringContent(response, TestResult.class);
+        return getHttpClient().sendPOST(uri, testResult);
     }
 
     public void addAttachment(int testResultId, final File file) {

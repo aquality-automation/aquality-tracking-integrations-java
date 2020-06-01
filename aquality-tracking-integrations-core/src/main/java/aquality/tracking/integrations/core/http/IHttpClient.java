@@ -8,18 +8,21 @@ public interface IHttpClient {
 
     /**
      * Sends GET request to specified uri.
-     * @param uri Request URI.
+     * @param uri    Request URI.
+     * @param tClass Class of the response data.
+     * @param <T>    Type of the response data.
      * @return Response as string.
      */
-    String sendGET(final URI uri);
+    <T> T sendGET(final URI uri, final Class<T> tClass);
 
     /**
      * Sends POST request to specified uri.
      * @param uri  Request URI.
-     * @param body JSON request body as string.
+     * @param body Request body which converts to string.
+     * @param <T>  Type of the response/request body data.
      * @return Response as string.
      */
-    String sendPOST(final URI uri, final String body);
+    <T> T sendPOST(final URI uri, final T body);
 
     /**
      * Sends POST request to specified uri.

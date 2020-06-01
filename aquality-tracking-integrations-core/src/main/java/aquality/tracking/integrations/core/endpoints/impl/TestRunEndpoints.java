@@ -4,7 +4,6 @@ import aquality.tracking.integrations.core.configuration.IConfiguration;
 import aquality.tracking.integrations.core.endpoints.ITestRunEndpoints;
 import aquality.tracking.integrations.core.http.IHttpClient;
 import aquality.tracking.integrations.core.models.TestRun;
-import aquality.tracking.integrations.core.utilities.JsonMapper;
 
 import javax.inject.Inject;
 import java.net.URI;
@@ -32,8 +31,7 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
 
         URI uri = getUriBuilder(START_TESTRUN_ENDPOINT).build();
 
-        String response = getHttpClient().sendPOST(uri, JsonMapper.getJson(testRun));
-        return JsonMapper.mapStringContent(response, TestRun.class);
+        return getHttpClient().sendPOST(uri, testRun);
     }
 
     public TestRun finishTestRun(int testRunId) {
@@ -42,7 +40,6 @@ public class TestRunEndpoints extends AqualityTrackingEndpoints implements ITest
                 .setParameter("id", testRunId)
                 .build();
 
-        String response = getHttpClient().sendGET(uri);
-        return JsonMapper.mapStringContent(response, TestRun.class);
+        return getHttpClient().sendGET(uri, TestRun.class);
     }
 }

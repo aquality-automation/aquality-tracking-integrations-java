@@ -2,6 +2,7 @@ package aquality.tracking.integrations.core.http;
 
 import aquality.tracking.integrations.core.AqualityUncheckedException;
 import aquality.tracking.integrations.core.configuration.IConfiguration;
+import aquality.tracking.integrations.core.utilities.JsonMapper;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.*;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -55,15 +56,19 @@ public class AqualityHttpClient implements IHttpClient {
     }
 
     @Override
-    public String sendGET(final URI uri) {
+    public <T> T sendGET(final URI uri, Class<T> tClass) {
         HttpGet request = new HttpGet(uri);
-        return sendRequest(request);
+        String responseContent = sendRequest(request);
+        return JsonMapper.mapStringContent(responseContent, tClass);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public String sendPOST(final URI uri, final String body) {
+    public <T> T sendPOST(final URI uri, final T body) {
         try {
-            return sendPOST(uri, new StringEntity(body));
+            HttpEntity jsonBody = new StringEntity(JsonMapper.getJson(body));
+            String responseContent = sendPOST(uri, jsonBody);
+            return (T) JsonMapper.mapStringContent(responseContent, body.getClass());
         } catch (UnsupportedEncodingException e) {
             throw new AqualityUncheckedException(format("Exception occurred during set request body:%n%s", body), e);
         }
