@@ -1,21 +1,22 @@
-package aquality.tracking.integrations.cucumber5jvm;
+package aquality.tracking.integrations.cucumber4jvm;
 
 import aquality.tracking.integrations.core.AqualityTrackingLifecycle;
-import io.cucumber.plugin.ConcurrentEventListener;
-import io.cucumber.plugin.event.*;
+import cucumber.api.event.*;
+
+import java.util.UUID;
 
 import static java.lang.String.format;
 
-public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
+public class AqualityTrackingCucumber4Jvm implements ConcurrentEventListener {
 
     private final AqualityTrackingLifecycle lifecycle;
 
-    public AqualityTrackingCucumber5Jvm() {
+    public AqualityTrackingCucumber4Jvm() {
         lifecycle = new AqualityTrackingLifecycle();
     }
 
     @Override
-    public void setEventPublisher(final EventPublisher eventPublisher) {
+    public void setEventPublisher(EventPublisher eventPublisher) {
         if (lifecycle.isEnabled()) {
             eventPublisher.registerHandlerFor(TestRunStarted.class, this::handleTestRunStartedEvent);
             eventPublisher.registerHandlerFor(TestRunFinished.class, this::handleTestRunFinishedEvent);
@@ -41,13 +42,13 @@ public class AqualityTrackingCucumber5Jvm implements ConcurrentEventListener {
     }
 
     private void handleTestCaseFinishedEvent(final TestCaseFinished event) {
-        TestCaseResultParser testCaseResultParser = new TestCaseResultParser(event.getResult());
+        TestCaseResultParser testCaseResultParser = new TestCaseResultParser(event.result);
         TestCaseResultParser.TestCaseResult testCaseResult = testCaseResultParser.parse();
         lifecycle.finishTestExecution(testCaseResult.getFinalResultId(), testCaseResult.getFailReason());
     }
 
     private void handleEmbedEvent(final EmbedEvent event) {
-        String fileName = format("%s_%s", event.getTestCase().getId(), event.getName());
-        lifecycle.addAttachment(fileName, event.getData());
+        String fileName = format("%s_%s", UUID.randomUUID(), event.name);
+        lifecycle.addAttachment(fileName, event.data);
     }
 }

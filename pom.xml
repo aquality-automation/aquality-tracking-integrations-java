@@ -21,6 +21,7 @@
     <modules>
         <module>aquality-tracking-integrations-core</module>
         <module>aquality-tracking-cucumber5-jvm</module>
+        <module>aquality-tracking-cucumber4-jvm</module>
     </modules>
 
     <distributionManagement>

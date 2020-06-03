@@ -5,6 +5,7 @@ import aquality.tracking.integrations.core.AqualityUncheckedException;
 import java.io.*;
 import java.net.URI;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -32,10 +33,14 @@ public class FileUtils {
     }
 
     public static String getFileSource(final URI uri) {
-        try (Stream<String> lines = Files.lines(Paths.get(uri))) {
+        return getFileSource(Paths.get(uri));
+    }
+
+    public static String getFileSource(final Path filePath) {
+        try (Stream<String> lines = Files.lines(filePath)) {
             return lines.collect(Collectors.joining(System.lineSeparator()));
         } catch (IOException e) {
-            throw new AqualityUncheckedException(format("File %s not found.", uri), e);
+            throw new AqualityUncheckedException(format("File %s not found.", filePath), e);
         }
     }
 
