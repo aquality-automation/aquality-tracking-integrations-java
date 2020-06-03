@@ -44,7 +44,7 @@ public class AqualityHttpClient implements IHttpClient {
         List<Header> headers = new ArrayList<>();
         headers.add(getBasicAuthHeader());
         headers.add(new BasicHeader(HttpHeaders.ACCEPT, APPLICATION_JSON.getMimeType()));
-        headers.add(new BasicHeader(HttpHeaders.CONTENT_TYPE, WILDCARD.getMimeType()));
+        headers.add(new BasicHeader(HttpHeaders.ACCEPT, WILDCARD.getMimeType()));
         return headers;
     }
 

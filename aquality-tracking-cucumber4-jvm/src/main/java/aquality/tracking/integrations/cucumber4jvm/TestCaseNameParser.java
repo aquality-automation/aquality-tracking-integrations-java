@@ -1,14 +1,19 @@
-package aquality.tracking.integrations.cucumber5jvm;
+package aquality.tracking.integrations.cucumber4jvm;
 
-import io.cucumber.core.internal.gherkin.AstBuilder;
-import io.cucumber.core.internal.gherkin.Parser;
-import io.cucumber.core.internal.gherkin.TokenMatcher;
-import io.cucumber.core.internal.gherkin.ast.Feature;
-import io.cucumber.core.internal.gherkin.ast.GherkinDocument;
-import io.cucumber.core.internal.gherkin.ast.ScenarioOutline;
-import io.cucumber.core.internal.gherkin.ast.TableRow;
-import io.cucumber.plugin.event.TestCase;
+import aquality.tracking.integrations.core.AqualityUncheckedException;
+import cucumber.api.TestCase;
+import gherkin.AstBuilder;
+import gherkin.Parser;
+import gherkin.TokenMatcher;
+import gherkin.ast.Feature;
+import gherkin.ast.GherkinDocument;
+import gherkin.ast.ScenarioOutline;
+import gherkin.ast.TableRow;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -33,7 +38,15 @@ class TestCaseNameParser {
     private Feature getCurrentFeature() {
         Parser<GherkinDocument> parser = new Parser<>(new AstBuilder());
         TokenMatcher matcher = new TokenMatcher();
-        GherkinDocument gherkinDocument = parser.parse(getFileSource(testCase.getUri()), matcher);
+        GherkinDocument gherkinDocument;
+        try {
+            String relativePathToFeatureFile = new URI(testCase.getUri()).getSchemeSpecificPart();
+            Path pathToFeatureFile = Paths.get(System.getProperty("user.dir"), relativePathToFeatureFile);
+
+            gherkinDocument = parser.parse(getFileSource(pathToFeatureFile), matcher);
+        } catch (URISyntaxException e) {
+            throw new AqualityUncheckedException(format("Failed to find feature file with URI: %s", testCase.getUri()), e);
+        }
         return gherkinDocument.getFeature();
     }
 

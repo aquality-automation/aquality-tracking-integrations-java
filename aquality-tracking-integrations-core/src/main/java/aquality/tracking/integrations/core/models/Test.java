@@ -9,6 +9,7 @@ import java.util.List;
 public class Test {
     private Integer id;
     private String name;
+    private String body;
     @JsonProperty("project_id")
     private Integer projectId;
     private List<Suite> suites;
