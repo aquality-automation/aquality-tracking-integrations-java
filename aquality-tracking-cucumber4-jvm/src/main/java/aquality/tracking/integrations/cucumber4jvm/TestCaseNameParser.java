@@ -54,8 +54,7 @@ class TestCaseNameParser {
         List<TableRow> examplesTableRows = feature.getChildren().stream()
                 .filter(child -> child.getName().equals(testCaseName))
                 .filter(child -> child instanceof ScenarioOutline)
-                .map(node -> (ScenarioOutline) node)
-                .map(outline -> outline.getExamples().get(0))
+                .map(node -> ((ScenarioOutline) node).getExamples().get(0))
                 .flatMap(examples -> examples.getTableBody().stream())
                 .collect(Collectors.toList());
 
