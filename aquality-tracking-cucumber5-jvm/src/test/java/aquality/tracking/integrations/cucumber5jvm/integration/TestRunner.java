@@ -15,6 +15,9 @@ import org.junit.runner.RunWith;
         plugin = {
                 "aquality.tracking.integrations.cucumber5jvm.AqualityTrackingCucumber5Jvm"
         },
+        tags = {
+                "@Demo"
+        },
         strict = true
 )
 public class TestRunner {

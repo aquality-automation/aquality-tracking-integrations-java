@@ -1,3 +1,4 @@
+@FeatureTag
 Feature: Test feature
 
   @Demo
@@ -19,3 +20,4 @@ Feature: Test feature
     Examples:
       | example value |
       | value1        |
+      | value2        |

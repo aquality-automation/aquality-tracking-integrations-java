@@ -1,3 +1,4 @@
+@FeatureTag
 Feature: Test feature
 
   @Demo

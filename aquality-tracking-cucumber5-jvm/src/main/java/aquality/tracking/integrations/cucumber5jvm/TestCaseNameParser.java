@@ -6,6 +6,7 @@ import io.cucumber.core.internal.gherkin.TokenMatcher;
 import io.cucumber.core.internal.gherkin.ast.*;
 import io.cucumber.plugin.event.TestCase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -35,14 +36,7 @@ class TestCaseNameParser {
     }
 
     private String getScenarioName(final Feature feature, final String testCaseName, final List<String> testCaseTags) {
-        List<TableRow> examplesTableRows = feature.getChildren().stream()
-                .filter(child -> child.getName().equals(testCaseName))
-                .filter(child -> child instanceof ScenarioOutline)
-                .map(child -> (ScenarioOutline) child)
-                .filter(child -> areTagsEqual(child.getTags(), testCaseTags))
-                .map(node -> node.getExamples().get(0))
-                .flatMap(examples -> examples.getTableBody().stream())
-                .collect(Collectors.toList());
+        List<TableRow> examplesTableRows = getExampleTableRows(feature, testCaseName, testCaseTags);
 
         int tableRowIndex = IntStream.range(0, examplesTableRows.size())
                 .filter(i -> examplesTableRows.get(i).getLocation().getLine() == testCase.getLine())
@@ -54,12 +48,26 @@ class TestCaseNameParser {
                 : format("%s: %d", testCaseName, tableRowIndex);
     }
 
+    private List<TableRow> getExampleTableRows(final Feature feature, final String testCaseName, final List<String> testCaseTags) {
+        return feature.getChildren().stream()
+                .filter(child -> child.getName().equals(testCaseName))
+                .filter(child -> child instanceof ScenarioOutline)
+                .map(child -> (ScenarioOutline) child)
+                .filter(child -> {
+                    List<Tag> actualTags = new ArrayList<>(feature.getTags());
+                    actualTags.addAll(child.getTags());
+                    return areTagsEqual(actualTags, testCaseTags);
+                })
+                .map(node -> node.getExamples().get(0))
+                .flatMap(examples -> examples.getTableBody().stream())
+                .collect(Collectors.toList());
+    }
+
     private boolean areTagsEqual(final List<Tag> actualTags, final List<String> expectedTags) {
         String actualTagsAsString = actualTags.stream()
-                .map(tag -> tag.getName().toLowerCase())
+                .map(Tag::getName)
                 .sorted().collect(Collectors.joining());
         String expectedTagsAsString = expectedTags.stream()
-                .map(String::toLowerCase)
                 .sorted().collect(Collectors.joining());
         return actualTagsAsString.equals(expectedTagsAsString);
     }
