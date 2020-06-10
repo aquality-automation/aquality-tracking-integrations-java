@@ -1,0 +1,13 @@
+{
+  "enabled": true,
+  "host": "https://localhost:8080/",
+  "token": "{token}",
+  "projectId": 1,
+  "executor": "DEBUG",
+  "suiteName": "DEBUG",
+  "buildName": "DEBUG",
+  "environment": "DEBUG",
+  "ciBuild": "DEBUG",
+  "debug": false,
+  "attachmentsDirectory": "target/attachments"
+}

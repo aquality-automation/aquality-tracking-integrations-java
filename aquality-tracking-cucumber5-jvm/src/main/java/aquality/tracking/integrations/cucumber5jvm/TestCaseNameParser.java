@@ -3,10 +3,7 @@ package aquality.tracking.integrations.cucumber5jvm;
 import io.cucumber.core.internal.gherkin.AstBuilder;
 import io.cucumber.core.internal.gherkin.Parser;
 import io.cucumber.core.internal.gherkin.TokenMatcher;
-import io.cucumber.core.internal.gherkin.ast.Feature;
-import io.cucumber.core.internal.gherkin.ast.GherkinDocument;
-import io.cucumber.core.internal.gherkin.ast.ScenarioOutline;
-import io.cucumber.core.internal.gherkin.ast.TableRow;
+import io.cucumber.core.internal.gherkin.ast.*;
 import io.cucumber.plugin.event.TestCase;
 
 import java.util.List;
@@ -26,7 +23,7 @@ class TestCaseNameParser {
 
     public String parse() {
         Feature currentFeature = getCurrentFeature();
-        String scenarioName = getScenarioName(currentFeature, testCase.getName());
+        String scenarioName = getScenarioName(currentFeature, testCase.getName(), testCase.getTags());
         return format("%s: %s", currentFeature.getName(), scenarioName);
     }
 
@@ -37,11 +34,13 @@ class TestCaseNameParser {
         return gherkinDocument.getFeature();
     }
 
-    private String getScenarioName(final Feature feature, final String testCaseName) {
+    private String getScenarioName(final Feature feature, final String testCaseName, final List<String> testCaseTags) {
         List<TableRow> examplesTableRows = feature.getChildren().stream()
                 .filter(child -> child.getName().equals(testCaseName))
                 .filter(child -> child instanceof ScenarioOutline)
-                .map(node -> ((ScenarioOutline) node).getExamples().get(0))
+                .map(child -> (ScenarioOutline) child)
+                .filter(child -> areTagsEqual(child.getTags(), testCaseTags))
+                .map(node -> node.getExamples().get(0))
                 .flatMap(examples -> examples.getTableBody().stream())
                 .collect(Collectors.toList());
 
@@ -53,5 +52,15 @@ class TestCaseNameParser {
         return tableRowIndex == -1
                 ? testCaseName
                 : format("%s: %d", testCaseName, tableRowIndex);
+    }
+
+    private boolean areTagsEqual(final List<Tag> actualTags, final List<String> expectedTags) {
+        String actualTagsAsString = actualTags.stream()
+                .map(tag -> tag.getName().toLowerCase())
+                .sorted().collect(Collectors.joining());
+        String expectedTagsAsString = expectedTags.stream()
+                .map(String::toLowerCase)
+                .sorted().collect(Collectors.joining());
+        return actualTagsAsString.equals(expectedTagsAsString);
     }
 }

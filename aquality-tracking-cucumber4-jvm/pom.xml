@@ -18,11 +18,22 @@
     <description>Aquality Tracking integration for Cucumber 4 JVM.</description>
     <url>https://github.com/aquality-automation/aquality-tracking-integrations-java</url>
 
+    <properties>
+        <cucumber.version>4.8.1</cucumber.version>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>io.cucumber</groupId>
             <artifactId>cucumber-java</artifactId>
-            <version>4.8.1</version>
+            <version>${cucumber.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.cucumber</groupId>
+            <artifactId>cucumber-junit</artifactId>
+            <version>${cucumber.version}</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
