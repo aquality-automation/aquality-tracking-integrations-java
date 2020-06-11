@@ -3,12 +3,10 @@ package aquality.tracking.integrations.cucumber5jvm;
 import io.cucumber.core.internal.gherkin.AstBuilder;
 import io.cucumber.core.internal.gherkin.Parser;
 import io.cucumber.core.internal.gherkin.TokenMatcher;
-import io.cucumber.core.internal.gherkin.ast.Feature;
-import io.cucumber.core.internal.gherkin.ast.GherkinDocument;
-import io.cucumber.core.internal.gherkin.ast.ScenarioOutline;
-import io.cucumber.core.internal.gherkin.ast.TableRow;
+import io.cucumber.core.internal.gherkin.ast.*;
 import io.cucumber.plugin.event.TestCase;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -26,7 +24,7 @@ class TestCaseNameParser {
 
     public String parse() {
         Feature currentFeature = getCurrentFeature();
-        String scenarioName = getScenarioName(currentFeature, testCase.getName());
+        String scenarioName = getScenarioName(currentFeature, testCase.getName(), testCase.getTags());
         return format("%s: %s", currentFeature.getName(), scenarioName);
     }
 
@@ -37,13 +35,8 @@ class TestCaseNameParser {
         return gherkinDocument.getFeature();
     }
 
-    private String getScenarioName(final Feature feature, final String testCaseName) {
-        List<TableRow> examplesTableRows = feature.getChildren().stream()
-                .filter(child -> child.getName().equals(testCaseName))
-                .filter(child -> child instanceof ScenarioOutline)
-                .map(node -> ((ScenarioOutline) node).getExamples().get(0))
-                .flatMap(examples -> examples.getTableBody().stream())
-                .collect(Collectors.toList());
+    private String getScenarioName(final Feature feature, final String testCaseName, final List<String> testCaseTags) {
+        List<TableRow> examplesTableRows = getExampleTableRows(feature, testCaseName, testCaseTags);
 
         int tableRowIndex = IntStream.range(0, examplesTableRows.size())
                 .filter(i -> examplesTableRows.get(i).getLocation().getLine() == testCase.getLine())
@@ -53,5 +46,37 @@ class TestCaseNameParser {
         return tableRowIndex == -1
                 ? testCaseName
                 : format("%s: %d", testCaseName, tableRowIndex);
+    }
+
+    private List<TableRow> getExampleTableRows(final Feature feature, final String testCaseName, final List<String> testCaseTags) {
+        return feature.getChildren().stream()
+                .filter(child -> child.getName().equals(testCaseName))
+                .filter(child -> child instanceof ScenarioOutline)
+                .map(child -> (ScenarioOutline) child)
+                .filter(scenarioOutline -> hasTags(scenarioOutline, feature.getTags(), testCaseTags))
+                .flatMap(scenarioOutline -> scenarioOutline.getExamples().stream())
+                .flatMap(examples -> examples.getTableBody().stream())
+                .collect(Collectors.toList());
+    }
+
+    private boolean hasTags(final ScenarioOutline scenarioOutline, final List<Tag> featureTags, final List<String> testCaseTags) {
+        List<Tag> scenarioOutlineTags = new ArrayList<>(featureTags);
+        scenarioOutlineTags.addAll(scenarioOutline.getTags());
+
+        return scenarioOutline.getExamples().stream()
+                .anyMatch(examples -> {
+                    List<Tag> scenarioOutlineAndExamplesTags = new ArrayList<>(scenarioOutlineTags);
+                    scenarioOutlineAndExamplesTags.addAll(examples.getTags());
+                    return areTagsEqual(scenarioOutlineAndExamplesTags, testCaseTags);
+                });
+    }
+
+    private boolean areTagsEqual(final List<Tag> actualTags, final List<String> expectedTags) {
+        String actualTagsAsString = actualTags.stream()
+                .map(Tag::getName)
+                .sorted().collect(Collectors.joining());
+        String expectedTagsAsString = expectedTags.stream()
+                .sorted().collect(Collectors.joining());
+        return actualTagsAsString.equals(expectedTagsAsString);
     }
 }
