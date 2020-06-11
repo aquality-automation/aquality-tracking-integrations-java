@@ -13,10 +13,17 @@ Feature: Test feature
       | example value |
       | value1        |
 
-  @Demo @Priority1
+  @Priority1
   Scenario Outline: Test with the same names
     Given I pass this scenario with parameter <example value>
 
+    @Demo
     Examples:
       | example value |
       | value1        |
+      | value2        |
+
+    Examples:
+      | example value |
+      | value3        |
+      | value4        |

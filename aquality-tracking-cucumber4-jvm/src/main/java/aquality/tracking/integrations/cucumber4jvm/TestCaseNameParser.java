@@ -67,16 +67,23 @@ class TestCaseNameParser {
                 .filter(child -> child.getName().equals(testCaseName))
                 .filter(child -> child instanceof ScenarioOutline)
                 .map(child -> (ScenarioOutline) child)
-                .filter(child -> {
-                    List<Tag> actualTags = new ArrayList<>(feature.getTags());
-                    actualTags.addAll(child.getTags());
-                    return areTagsEqual(actualTags, testCaseTags);
-                })
-                .map(node -> node.getExamples().get(0))
+                .filter(scenarioOutline -> hasTags(scenarioOutline, feature.getTags(), testCaseTags))
+                .flatMap(child -> child.getExamples().stream())
                 .flatMap(examples -> examples.getTableBody().stream())
                 .collect(Collectors.toList());
     }
 
+    private boolean hasTags(final ScenarioOutline scenarioOutline, final List<Tag> featureTags, final List<PickleTag> testCaseTags) {
+        List<Tag> scenarioOutlineTags = new ArrayList<>(featureTags);
+        scenarioOutlineTags.addAll(scenarioOutline.getTags());
+
+        return scenarioOutline.getExamples().stream()
+                .anyMatch(examples -> {
+                    List<Tag> scenarioOutlineAndExamplesTags = new ArrayList<>(scenarioOutlineTags);
+                    scenarioOutlineAndExamplesTags.addAll(examples.getTags());
+                    return areTagsEqual(scenarioOutlineAndExamplesTags, testCaseTags);
+                });
+    }
 
     private boolean areTagsEqual(final List<Tag> actualTags, final List<PickleTag> expectedTags) {
         String actualTagsAsString = actualTags.stream()
