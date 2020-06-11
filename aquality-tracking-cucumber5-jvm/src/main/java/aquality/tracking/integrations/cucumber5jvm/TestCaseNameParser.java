@@ -54,7 +54,7 @@ class TestCaseNameParser {
                 .filter(child -> child instanceof ScenarioOutline)
                 .map(child -> (ScenarioOutline) child)
                 .filter(scenarioOutline -> hasTags(scenarioOutline, feature.getTags(), testCaseTags))
-                .flatMap(child -> child.getExamples().stream())
+                .flatMap(scenarioOutline -> scenarioOutline.getExamples().stream())
                 .flatMap(examples -> examples.getTableBody().stream())
                 .collect(Collectors.toList());
     }
