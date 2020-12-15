@@ -46,7 +46,7 @@ class TestCaseResultParser {
     }
 
     private String getShortErrorMessage(final Throwable error) {
-        return error.getMessage().split("\n")[0];
+        return String.valueOf(error.getMessage()).split("\n")[0];
     }
 
     @Data
