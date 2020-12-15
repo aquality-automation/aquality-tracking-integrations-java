@@ -5,13 +5,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>aquality-tracking-cucumber5-jvm</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
     <packaging>jar</packaging>
 
     <parent>
         <artifactId>aquality-tracking-integrations</artifactId>
         <groupId>com.github.aquality-automation</groupId>
-        <version>1.3.0</version>
+        <version>1.3.1</version>
     </parent>
 
     <name>Aquality Tracking Cucumber 5 JVM</name>
