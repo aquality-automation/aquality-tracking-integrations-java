@@ -7,7 +7,7 @@ Feature: Test feature
 
   @Smoke @Priority1
   Scenario Outline: Test with the same names
-    Given I pass this scenario with parameter <example value>
+    Given I pass this scenario with <example value> parameter
 
     Examples:
       | example value |
@@ -15,7 +15,7 @@ Feature: Test feature
 
   @Priority1
   Scenario Outline: Test with the same names
-    Given I pass this scenario with parameter <example value>
+    Given I pass this scenario with <example value> parameter
 
     @Demo
     Examples:
@@ -32,10 +32,10 @@ Feature: Test feature
   Rule: Rule 1
 
   Example: Rule 1 example
-    Given I pass this scenario with parameter 'Rule 1 value'
+    Given I pass this scenario with 'Rule 1 value' parameter
 
   @Rule2 @Demo
   Rule: Rule 2
 
   Example: Rule 2 example
-    Given I pass this scenario with parameter 'Rule 2 value'
+    Given I pass this scenario with 'Rule 2 value' parameter

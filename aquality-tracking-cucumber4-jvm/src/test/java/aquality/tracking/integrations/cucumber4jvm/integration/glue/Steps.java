@@ -9,7 +9,7 @@ public class Steps {
         // step logic
     }
 
-    @Given("I pass this scenario with parameter {}")
+    @Given("I pass this scenario with {} parameter")
     public void passThisScenario(String parameter) {
         // step logic
     }
