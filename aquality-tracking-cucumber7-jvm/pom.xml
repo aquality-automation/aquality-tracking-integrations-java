@@ -4,7 +4,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>aquality-tracking-cucumber4-jvm</artifactId>
+    <artifactId>aquality-tracking-cucumber7-jvm</artifactId>
     <version>1.4.0</version>
     <packaging>jar</packaging>
 
@@ -14,12 +14,12 @@
         <version>1.4.0</version>
     </parent>
 
-    <name>Aquality Tracking Cucumber 4 JVM</name>
-    <description>Aquality Tracking integration for Cucumber 4 JVM.</description>
+    <name>Aquality Tracking Cucumber 7 JVM</name>
+    <description>Aquality Tracking integration for Cucumber 7 JVM.</description>
     <url>https://github.com/aquality-automation/aquality-tracking-integrations-java</url>
 
     <properties>
-        <cucumber.version>4.8.1</cucumber.version>
+        <cucumber.version>7.15.0</cucumber.version>
     </properties>
 
     <dependencies>

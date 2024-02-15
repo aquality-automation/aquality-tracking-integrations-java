@@ -27,3 +27,15 @@ Feature: Test feature
       | example value |
       | value3        |
       | value4        |
+
+  @Rule1
+  Rule: Rule 1
+
+  Example: Rule 1 example
+    Given I pass this scenario with 'Rule 1 value' parameter
+
+  @Rule2 @Demo
+  Rule: Rule 2
+
+  Example: Rule 2 example
+    Given I pass this scenario with 'Rule 2 value' parameter

@@ -1,4 +1,4 @@
-package aquality.tracking.integrations.cucumber4jvm.integration.glue;
+package aquality.tracking.integrations.cucumber7jvm.integration.glue;
 
 import io.cucumber.java.en.Given;
 
